@@ -118,67 +118,67 @@
 //           //model
 //           //design
 
-//           StreamBuilder(
-//             stream: FirebaseFirestore.instance
-//                 .collection("items")
-//                 .where("itemID", whereIn: cartMethods.separateItemIDsFromUserCartList())
-//                 .orderBy("publishedDate", descending: true)
-//                 .snapshots(),
-//             builder: (context, AsyncSnapshot dataSnapshot)
-//             {
-//               if(dataSnapshot.hasData)
-//               {
-//                 //display
-//                 return SliverList(
-//                   delegate: SliverChildBuilderDelegate((context, index)
-//                   {
-//                     Items model = Items.fromJson(
-//                       dataSnapshot.data.docs[index].data() as Map<String, dynamic>
-//                     );
+          // StreamBuilder(
+          //   stream: FirebaseFirestore.instance
+          //       .collection("items")
+          //       .where("itemID", whereIn: cartMethods.separateItemIDsFromUserCartList())
+          //       .orderBy("publishedDate", descending: true)
+          //       .snapshots(),
+          //   builder: (context, AsyncSnapshot dataSnapshot)
+          //   {
+          //     if(dataSnapshot.hasData)
+          //     {
+          //       //display
+          //       return SliverList(
+          //         delegate: SliverChildBuilderDelegate((context, index)
+          //         {
+          //           Items model = Items.fromJson(
+          //             dataSnapshot.data.docs[index].data() as Map<String, dynamic>
+          //           );
 
-//                     if(index == 0)
-//                     {
-//                       totalAmount = 0;
-//                       totalAmount = totalAmount + (double.parse(model.price!) * itemQuantityList![index]);
-//                     }
-//                     else //==1 or greater than 1
-//                     {
-//                       totalAmount = totalAmount + (double.parse(model.price!) * itemQuantityList![index]);
-//                     }
+          //           if(index == 0)
+          //           {
+          //             totalAmount = 0;
+          //             totalAmount = totalAmount + (double.parse(model.price!) * itemQuantityList![index]);
+          //           }
+          //           else //==1 or greater than 1
+          //           {
+          //             totalAmount = totalAmount + (double.parse(model.price!) * itemQuantityList![index]);
+          //           }
 
-//                         //1                              == 1
-//                     if(dataSnapshot.data.docs.length - 1 == index)
-//                     {
-//                       WidgetsBinding.instance.addPostFrameCallback((timeStamp)
-//                       {
-//                         Provider.of<TotalAmount>(context, listen: false).showTotalAmountOfCartItems(totalAmount);
-//                       });
-//                     }
+          //               //1                              == 1
+          //           if(dataSnapshot.data.docs.length - 1 == index)
+          //           {
+          //             WidgetsBinding.instance.addPostFrameCallback((timeStamp)
+          //             {
+          //               Provider.of<TotalAmount>(context, listen: false).showTotalAmountOfCartItems(totalAmount);
+          //             });
+          //           }
 
-//                     return Padding(
-//                       padding: const EdgeInsets.all(8.0),
-//                       child: CartItemDesignWidget(
-//                         model: model,
-//                         quantityNumber: itemQuantityList![index],
-//                       ),
-//                     );
-//                   },
-//                     childCount: dataSnapshot.data.docs.length,
-//                   ),
-//                 );
-//               }
-//               else
-//               {
-//                 return const SliverToBoxAdapter(
-//                   child: Center(
-//                     child: Text(
-//                       "No items exists in cart",
-//                     ),
-//                   ),
-//                 );
-//               }
-//             },
-//           ),
+          //           return Padding(
+          //             padding: const EdgeInsets.all(8.0),
+          //             child: CartItemDesignWidget(
+          //               model: model,
+          //               quantityNumber: itemQuantityList![index],
+          //             ),
+          //           );
+          //         },
+          //           childCount: dataSnapshot.data.docs.length,
+          //         ),
+          //       );
+          //     }
+          //     else
+          //     {
+          //       return const SliverToBoxAdapter(
+          //         child: Center(
+          //           child: Text(
+          //             "No items exists in cart",
+          //           ),
+          //         ),
+          //       );
+          //     }
+          //   },
+          // ),
 
 //         ],
 //       ),

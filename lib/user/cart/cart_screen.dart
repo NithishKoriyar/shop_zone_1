@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shop_zone/user/cart/cart_item_design_widget.dart';
+import 'package:shop_zone/user/models/cart.dart';
 import 'package:shop_zone/user/userPreferences/current_user.dart';
 import 'package:http/http.dart' as http;
 import 'package:shop_zone/user/widgets/my_drawer.dart';
@@ -14,6 +16,7 @@ class CartScreenUser extends StatefulWidget {
 }
 
 class _CartScreenUserState extends State<CartScreenUser> {
+  List<int>? itemQuantityList;
   final CurrentUser currentUserController = Get.put(CurrentUser());
 
   late String userName;
@@ -28,7 +31,6 @@ class _CartScreenUserState extends State<CartScreenUser> {
     currentUserController.getUserInfo().then((_) {
       setUserInfo();
       printUserInfo();
-      fetchCartItems();
       // Once the seller info is set, call setState to trigger a rebuild.
       setState(() {});
     });
@@ -51,7 +53,7 @@ class _CartScreenUserState extends State<CartScreenUser> {
   List<dynamic> items = [];
   bool isLoading = true;
 
-  Future<void> fetchCartItems() async {
+  Stream<List<dynamic>> fetchCartItems() async* {
     // Assuming your API endpoint is something like this
     print("Loading");
     const String apiUrl = API.cartView;
@@ -60,13 +62,11 @@ class _CartScreenUserState extends State<CartScreenUser> {
 
     if (response.statusCode == 200) {
       final List<dynamic> fetchedItems = json.decode(response.body);
-      setState(() {
-        items = fetchedItems;
-        isLoading = false;
-      });
+      yield fetchedItems;
+      print(fetchedItems);
     } else {
-      // Handle the error here
       print("Error fetching cart items");
+      yield []; // yield an empty list or handle error differently
     }
   }
 
@@ -75,19 +75,36 @@ class _CartScreenUserState extends State<CartScreenUser> {
     return Scaffold(
       drawer: MyDrawer(),
       appBar: AppBar(
-        
         title: Text("Cart"),
         backgroundColor: Colors.black,
         centerTitle: true,
       ),
-      body: ListView.builder(
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          final item = items[index];
-          return ListTile(
-            title: Text(item['itemTitle']),
-            // Add more fields as per your item structure
-          );
+      body: StreamBuilder<List<dynamic>>(
+        stream: fetchCartItems(),
+        builder: (context, dataSnapshot) {
+          if (dataSnapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+                child: CircularProgressIndicator()); // Show loading indicator
+          } else if (!dataSnapshot.hasData || dataSnapshot.data!.isEmpty) {
+            return Center(child: Text('No items exist in the cart'));
+          } else {
+            List<dynamic> cartItems = dataSnapshot.data!;
+            return ListView.builder(
+              itemCount: cartItems.length,
+              itemBuilder: (context, index) {
+                Carts model =
+                    Carts.fromJson(cartItems[index] as Map<String, dynamic>);
+return Padding(
+  padding: const EdgeInsets.all(8.0),
+  child: CartItemDesignWidget(
+    model: model,
+    quantityNumber: model.itemCounter,
+  ),
+);
+
+              },
+            );
+          }
         },
       ),
     );
