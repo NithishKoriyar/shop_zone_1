@@ -1,8 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:convert';
+import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shop_zone/api_key.dart';
 import 'package:shop_zone/user/addressScreens/text_field_address_widget.dart';
 import 'package:shop_zone/user/global/global.dart';
+import 'package:shop_zone/user/userPreferences/current_user.dart';
 
 
 class SaveNewAddressScreen extends StatefulWidget
@@ -10,7 +14,7 @@ class SaveNewAddressScreen extends StatefulWidget
   String? sellerUID;
   double? totalAmount;
 
-  SaveNewAddressScreen({this.sellerUID, this.totalAmount,});
+  SaveNewAddressScreen();
 
   @override
   State<SaveNewAddressScreen> createState() => _SaveNewAddressScreenState();
@@ -27,19 +31,49 @@ class _SaveNewAddressScreenState extends State<SaveNewAddressScreen>
   String completeAddress = "";
   final formKey = GlobalKey<FormState>();
 
+    final CurrentUser currentUserController = Get.put(CurrentUser());
+
+  late String userName;
+  late String userEmail;
+  late String userID;
+  late String userImg;
+
   @override
+  void initState() {
+    super.initState();
+    currentUserController.getUserInfo().then((_) {
+      setUserInfo();
+      printUserInfo();
+      // Once the seller info is set, call setState to trigger a rebuild.
+      setState(() {});
+    });
+  }
+
+  void setUserInfo() {
+    userName = currentUserController.user.user_name;
+    userEmail = currentUserController.user.user_email;
+    userID = currentUserController.user.user_id.toString();
+    userImg = currentUserController.user.user_profile;
+  }
+
+  void printUserInfo() {
+    print('user Name: $userName');
+    print('user Email: $userEmail');
+    print('user ID: $userID'); // Corrected variable name
+    print('user image: $userImg');
+  }
   Widget build(BuildContext context)
   {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         flexibleSpace: Container(
           decoration: const BoxDecoration(
               gradient: LinearGradient(
                 colors:
                 [
-                  Colors.pinkAccent,
-                  Colors.purpleAccent,
+                  Colors.black,
+                  Colors.black,
                 ],
                 begin: FractionalOffset(0.0, 0.0),
                 end: FractionalOffset(1.0, 0.0),
@@ -49,7 +83,7 @@ class _SaveNewAddressScreenState extends State<SaveNewAddressScreen>
           ),
         ),
         title: const Text(
-          "jan-G-shopy",
+          "Shop Zone",
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -58,42 +92,41 @@ class _SaveNewAddressScreenState extends State<SaveNewAddressScreen>
         centerTitle: true,
         automaticallyImplyLeading: true,
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: ()
-        {
-          if(formKey.currentState!.validate())
-          {
+floatingActionButton: FloatingActionButton.extended(
+    onPressed: () async {
+        if (formKey.currentState!.validate()) {
             completeAddress = streetNumber.text.trim() + ", " + flatHouseNumber.text.trim() + ", " + city.text.trim() + ", " + stateCountry.text.trim() + ".";
             
-            FirebaseFirestore.instance
-                .collection("users")
-                .doc(sharedPreferences!.getString("uid"))
-                .collection("userAddress")
-                .doc(DateTime.now().millisecondsSinceEpoch.toString())
-                .set(
-                {
-                  "name": name.text.trim(),
-                  "phoneNumber": phoneNumber.text.trim(),
-                  "streetNumber": streetNumber.text.trim(),
-                  "flatHouseNumber": flatHouseNumber.text.trim(),
-                  "city": city.text.trim(),
-                  "stateCountry": stateCountry.text.trim(),
-                  "completeAddress": completeAddress,
-                }).then((value)
-            {
-              Fluttertoast.showToast(msg: "New Shipment Address has been saved.");
-              formKey.currentState!.reset();
-            });
-          }
-        },
-        label: const Text(
-            "Save Now"
-        ),
-        icon: const Icon(
-          Icons.save,
-          color: Colors.white,
-        ),
-      ),
+            var response = await http.post(
+                Uri.parse(API.addNewAddress),
+                body: jsonEncode({
+                    "uid": userID,
+                    "name": name.text.trim(),
+                    "phoneNumber": phoneNumber.text.trim(),
+                    "streetNumber": streetNumber.text.trim(),
+                    "flatHouseNumber": flatHouseNumber.text.trim(),
+                    "city": city.text.trim(),
+                    "stateCountry": stateCountry.text.trim(),
+                    "completeAddress": completeAddress,
+                }),
+            );
+
+            if (response.statusCode == 200) {
+                var responseData = jsonDecode(response.body);
+                Fluttertoast.showToast(msg: responseData['message']);
+                formKey.currentState!.reset();
+            } else {
+                Fluttertoast.showToast(msg: "Error saving address.");
+            }
+        }
+    },
+    label: const Text("Save Now"),
+    icon: const Icon(
+        Icons.save,
+        color: Colors.white,
+    ),
+),
+
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -103,7 +136,7 @@ class _SaveNewAddressScreenState extends State<SaveNewAddressScreen>
               child: Text(
                 "Save New Address:",
                 style: TextStyle(
-                  color: Colors.grey,
+                  color: Colors.black,
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                 ),

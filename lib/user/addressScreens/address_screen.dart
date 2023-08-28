@@ -1,49 +1,81 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_zone/api_key.dart';
 import 'package:shop_zone/user/addressScreens/address_design_widget.dart';
 import 'package:shop_zone/user/addressScreens/save_new_address_screen.dart';
 import 'package:shop_zone/user/assistantMethods/address_changer.dart';
 import 'package:shop_zone/user/global/global.dart';
 import 'package:shop_zone/user/models/address.dart';
+import 'package:http/http.dart' as http;
+import 'package:shop_zone/user/userPreferences/current_user.dart';
 
-
-class AddressScreen extends StatefulWidget
-{
+class AddressScreen extends StatefulWidget {
   String? sellerUID;
   double? totalAmount;
 
-  AddressScreen({this.sellerUID, this.totalAmount,});
+  AddressScreen({
+    this.sellerUID,
+    this.totalAmount,
+  });
 
   @override
   State<AddressScreen> createState() => _AddressScreenState();
 }
 
-class _AddressScreenState extends State<AddressScreen>
-{
+class _AddressScreenState extends State<AddressScreen> {
+  final CurrentUser currentUserController = Get.put(CurrentUser());
+
+  late String userName;
+  late String userEmail;
+  late String userID;
+  late String userImg;
+
   @override
-  Widget build(BuildContext context)
-  {
+  void initState() {
+    super.initState();
+    currentUserController.getUserInfo().then((_) {
+      setUserInfo();
+      printUserInfo();
+      // Once the seller info is set, call setState to trigger a rebuild.
+      setState(() {});
+    });
+  }
+
+  void setUserInfo() {
+    userName = currentUserController.user.user_name;
+    userEmail = currentUserController.user.user_email;
+    userID = currentUserController.user.user_id.toString();
+    userImg = currentUserController.user.user_profile;
+  }
+
+  void printUserInfo() {
+    print('user Name: $userName');
+    print('user Email: $userEmail');
+    print('user ID: $userID'); // Corrected variable name
+    print('user image: $userImg');
+  }
+
+  Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         flexibleSpace: Container(
           decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors:
-                [
-                  Colors.pinkAccent,
-                  Colors.purpleAccent,
-                ],
-                begin: FractionalOffset(0.0, 0.0),
-                end: FractionalOffset(1.0, 0.0),
-                stops: [0.0, 1.0],
-                tileMode: TileMode.clamp,
-              )
-          ),
+            colors: [
+              Colors.black,
+              Colors.black,
+            ],
+            begin: FractionalOffset(0.0, 0.0),
+            end: FractionalOffset(1.0, 0.0),
+            stops: [0.0, 1.0],
+            tileMode: TileMode.clamp,
+          )),
         ),
         title: const Text(
-          "jan-G-shopy",
+          "Shop Zone",
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -53,70 +85,49 @@ class _AddressScreenState extends State<AddressScreen>
         automaticallyImplyLeading: true,
       ),
       floatingActionButton: FloatingActionButton.extended(
-          onPressed: ()
-          {
-            Navigator.push(context, MaterialPageRoute(builder: (c)=>SaveNewAddressScreen(
-              sellerUID: widget.sellerUID.toString(),
-              totalAmount: widget.totalAmount!.toDouble(),
-            )));
-          },
-          label: const Text(
-            "Add New Address"
-          ),
-          icon: const Icon(
-            Icons.add_location,
-            color: Colors.white,
-          ),
+        onPressed: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (c) => SaveNewAddressScreen()));
+        },
+        label: const Text("Add New Address"),
+        icon: const Icon(
+          Icons.add_location,
+          color: Colors.white,
+        ),
       ),
       body: Column(
         children: [
-
           //query
           //model
           //design
 
-          Consumer<AddressChanger>(builder: (context, address, c)
-          {
+          Consumer<AddressChanger>(builder: (context, address, c) {
             return Flexible(
-              child: StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection("users")
-                    .doc(sharedPreferences!.getString("uid"))
-                    .collection("userAddress").snapshots(),
-                builder: (context, AsyncSnapshot dataSnapshot)
-                {
-                  if(dataSnapshot.hasData)
-                  {
-                    if(dataSnapshot.data.docs.length > 0)
-                    {
+              child: StreamBuilder<List<dynamic>>(
+                stream: fetchAddressStream(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.active) {
+                    if (snapshot.hasData && snapshot.data!.isNotEmpty) {
                       return ListView.builder(
-                          itemBuilder: (context, index)
-                          {
-                            return AddressDesignWidget(
-                              addressModel: Address.fromJson(
-                                dataSnapshot.data.docs[index].data() as Map<String, dynamic>
-                              ),
-                              index: address.count,
-                              value: index,
-                              addressID: dataSnapshot.data.docs[index].id,
-                              totalAmount: widget.totalAmount,
-                              sellerUID: widget.sellerUID,
-                            );
-                          },
-                          itemCount: dataSnapshot.data.docs.length,
+                        itemBuilder: (context, index) {
+                          return AddressDesignWidget(
+                            addressModel:
+                                Address.fromJson(snapshot.data![index]),
+                            index: address.count,
+                            value: index,
+                            addressID: snapshot.data![index]['id'],
+                            totalAmount: widget.totalAmount,
+                            sellerUID: widget.sellerUID,
+                          );
+                        },
+                        itemCount: snapshot.data!.length,
                       );
-                    }
-                    else
-                    {
+                    } else {
                       return Container();
                     }
-                  }
-                  else
-                  {
+                  } else {
                     return const Center(
-                      child: Text(
-                        "No data exists.",
-                      ),
+                      child: CircularProgressIndicator(),
                     );
                   }
                 },
@@ -126,5 +137,34 @@ class _AddressScreenState extends State<AddressScreen>
         ],
       ),
     );
+  }
+
+  Stream<List<dynamic>> fetchAddressStream() async* {
+    while (true) {
+      print("------address stream-------");
+
+      Uri requestUri = Uri.parse('${API.fetchAddress}?uid=$userID');
+      print("Requesting URI: $requestUri"); // Print the URI being requested
+
+      final response = await http.get(requestUri);
+
+      if (response.statusCode == 200) {
+        print(
+            "Data received: ${response.body}"); // Print the data received from the API
+
+        var decodedData = json.decode(response.body);
+        if (decodedData is List) {
+          // Ensure the decoded data is a list before yielding
+          yield decodedData;
+        } else {
+          // Handle the case when the response isn't a list (you can adjust this part as needed)
+          yield [];
+        }
+      } else {
+        throw Exception('Failed to load address');
+      }
+
+      await Future.delayed(Duration(seconds: 10)); // Adjust the delay as needed
+    }
   }
 }

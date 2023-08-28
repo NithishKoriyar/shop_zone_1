@@ -1,5 +1,6 @@
 class Address
 {
+  String? uid;
   String? name;
   String? phoneNumber;
   String? streetNumber;
@@ -10,6 +11,7 @@ class Address
 
 
   Address({
+    this.uid,
     this.name,
     this.phoneNumber,
     this.streetNumber,
@@ -21,6 +23,7 @@ class Address
 
   Address.fromJson(Map<String, dynamic> json)
   {
+    uid = json["uid"];
     name = json['name'];
     phoneNumber = json['phoneNumber'];
     streetNumber = json['streetNumber'];

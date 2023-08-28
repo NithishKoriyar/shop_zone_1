@@ -2,10 +2,13 @@ import 'package:cart_stepper/cart_stepper.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:shop_zone/user/addressScreens/address_screen.dart';
+import 'package:shop_zone/user/cart/cart_screen.dart';
 import 'package:shop_zone/user/models/cart.dart';
 import 'package:shop_zone/user/userPreferences/current_user.dart';
 import 'package:shop_zone/user/widgets/appbar_cart_badge.dart';
 import '../../api_key.dart';
+import 'package:http/http.dart' as http;
 
 class ItemsDetailsScreen extends StatefulWidget {
   Carts? model;
@@ -49,12 +52,27 @@ class _ItemsDetailsScreenState extends State<ItemsDetailsScreen> {
     print('user image: $userImg');
   }
 
-double getTotalPrice() {
-  double itemPrice = double.tryParse(widget.model!.price ?? '0') ?? 0.0;
-  return itemPrice * (widget.model!.itemCounter ?? 0);
-}
+  double getTotalPrice() {
+    double itemPrice = double.tryParse(widget.model!.price ?? '0') ?? 0.0;
+    return itemPrice * (widget.model!.itemCounter ?? 0);
+  }
 
+  //!delete item from the cart list
+  Future<void> removeItemFromCart(String userID, String itemID) async {
+    final response = await http.post(
+      Uri.parse(API.deleteItemFromCart),
+      body: {
+        'userId': userID,
+        'itemId': itemID,
+      },
+    );
 
+    if (response.statusCode == 200) {
+      Fluttertoast.showToast(msg: 'Item removed successfully!');
+    } else {
+      Fluttertoast.showToast(msg: 'Failed to remove item. Please try again.');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,16 +81,49 @@ double getTotalPrice() {
       appBar: AppBarWithCartBadge(
         sellerUID: widget.model!.sellerUID.toString(),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          // Your onPressed logic here
-        },
-        label: const Text("Buy Now"),
-        icon: const Icon(
-          Icons.shopping_cart,
-          color: Colors.white,
-        ),
-        backgroundColor: Colors.black,
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          const SizedBox(
+            height: 10,
+          ),
+          FloatingActionButton.extended(
+            onPressed: () {
+              // Call the remove function
+              removeItemFromCart(userID, widget.model!.itemID.toString())
+                  .then((_) {
+                Navigator.pop(context);
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (c) => CartScreenUser()));
+              });
+            },
+            heroTag: "btn1",
+            icon: const Icon(
+              Icons.delete_sweep_outlined,
+            ),
+            label: const Text(
+              "Remove",
+              style: TextStyle(fontSize: 16),
+            ),
+            backgroundColor: Colors.black,
+          ),
+          //!Buy now option
+          FloatingActionButton.extended(
+            onPressed: () {
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (c) => AddressScreen()));
+            },
+            heroTag: "btn2",
+            icon: const Icon(
+              Icons.shopping_cart,
+            ),
+            label: const Text(
+              "Buy Now",
+              style: TextStyle(fontSize: 16),
+            ),
+            backgroundColor: Colors.black,
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -139,20 +190,18 @@ double getTotalPrice() {
                 color: Colors.green,
               ),
             ),
-Padding(
-  padding: const EdgeInsets.all(10.0),
-  child: Text(
-    "Total Price : ₹ " + getTotalPrice().toString(),
-    textAlign: TextAlign.justify,
-    style: const TextStyle(
-      fontWeight: FontWeight.bold,
-      fontSize: 20,
-      color: Colors.black,
-    ),
-  ),
-),
-
-
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Text(
+                "Total Price : ₹ " + getTotalPrice().toString(),
+                textAlign: TextAlign.justify,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  color: Colors.black,
+                ),
+              ),
+            ),
             const SizedBox(
               height: 30,
             ),

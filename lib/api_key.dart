@@ -18,6 +18,9 @@ class API {
       "$hostConnectUser/userItemView.php"; //get seller Brand items
   static const addToCart = "$hostConnectUser/addToCart.php"; // add To Cart
   static const cartView = "$hostConnectUser/cartView.php"; // add To Cart
+  static const deleteItemFromCart = "$hostConnectUser/deleteItemFromCart.php"; // delete Item From Cart
+  static const fetchAddress = "$hostConnectUser/address.php"; // address
+  static const addNewAddress = "$hostConnectUser/addNewAddress.php"; // add New Address
 
   //!------------------------------SELLERS API CONNECTIONS --------------------------------
 

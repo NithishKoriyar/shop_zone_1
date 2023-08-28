@@ -4,9 +4,7 @@ import 'package:shop_zone/user/assistantMethods/address_changer.dart';
 import 'package:shop_zone/user/models/address.dart';
 import 'package:shop_zone/user/placeOrderScreen/place_order_screen.dart';
 
-
-class AddressDesignWidget extends StatefulWidget
-{
+class AddressDesignWidget extends StatefulWidget {
   Address? addressModel;
   int? index;
   int? value;
@@ -27,31 +25,26 @@ class AddressDesignWidget extends StatefulWidget
   State<AddressDesignWidget> createState() => _AddressDesignWidgetState();
 }
 
-class _AddressDesignWidgetState extends State<AddressDesignWidget>
-{
+class _AddressDesignWidgetState extends State<AddressDesignWidget> {
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     return Card(
       color: Colors.white24,
       child: Column(
         children: [
-
           //address info
           Row(
             children: [
-
               Radio(
                 groupValue: widget.index,
                 value: widget.value!,
                 activeColor: Colors.pink,
-                onChanged: (val)
-                {
+                onChanged: (val) {
                   //provider
-                  Provider.of<AddressChanger>(context, listen: false).showSelectedAddress(val);
+                  Provider.of<AddressChanger>(context, listen: false)
+                      .showSelectedAddress(val);
                 },
               ),
-
               Column(
                 children: [
                   Container(
@@ -59,10 +52,8 @@ class _AddressDesignWidgetState extends State<AddressDesignWidget>
                     width: MediaQuery.of(context).size.width * 0.8,
                     child: Table(
                       children: [
-
                         TableRow(
-                          children:
-                          [
+                          children: [
                             const Text(
                               "Name: ",
                               style: TextStyle(
@@ -75,10 +66,8 @@ class _AddressDesignWidgetState extends State<AddressDesignWidget>
                             ),
                           ],
                         ),
-
                         const TableRow(
-                          children:
-                          [
+                          children: [
                             SizedBox(
                               height: 10,
                             ),
@@ -87,10 +76,8 @@ class _AddressDesignWidgetState extends State<AddressDesignWidget>
                             ),
                           ],
                         ),
-
                         TableRow(
-                          children:
-                          [
+                          children: [
                             const Text(
                               "Phone Number: ",
                               style: TextStyle(
@@ -103,10 +90,8 @@ class _AddressDesignWidgetState extends State<AddressDesignWidget>
                             ),
                           ],
                         ),
-
                         const TableRow(
-                          children:
-                          [
+                          children: [
                             SizedBox(
                               height: 10,
                             ),
@@ -115,10 +100,8 @@ class _AddressDesignWidgetState extends State<AddressDesignWidget>
                             ),
                           ],
                         ),
-
                         TableRow(
-                          children:
-                          [
+                          children: [
                             const Text(
                               "Full Address: ",
                               style: TextStyle(
@@ -131,10 +114,8 @@ class _AddressDesignWidgetState extends State<AddressDesignWidget>
                             ),
                           ],
                         ),
-
                         const TableRow(
-                          children:
-                          [
+                          children: [
                             SizedBox(
                               height: 10,
                             ),
@@ -143,38 +124,42 @@ class _AddressDesignWidgetState extends State<AddressDesignWidget>
                             ),
                           ],
                         ),
-
                       ],
                     ),
                   ),
                 ],
               ),
-
             ],
           ),
 
           //button
           widget.value == Provider.of<AddressChanger>(context).count
               ? Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ElevatedButton(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
                     child: const Text("Proceed"),
                     style: ElevatedButton.styleFrom(
                       primary: Colors.purpleAccent,
                     ),
-                    onPressed: ()
-                    {
+                    onPressed: () {
+                      // Print the values of addressID, sellerUID, and totalAmount
+                      print("addressID: ${widget.addressID}");
+                      print("sellerUID: ${widget.sellerUID}");
+                      print("totalAmount: ${widget.totalAmount}");
+
                       //send user to Place Order Screen finally
-                      Navigator.push(context, MaterialPageRoute(builder: (c)=> PlaceOrderScreen(
-                        addressID: widget.addressID,
-                        totalAmount: widget.totalAmount,
-                        sellerUID: widget.sellerUID,
-                      )));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (c) => PlaceOrderScreen(
+                                    addressID: widget.addressID,
+                                    totalAmount: widget.totalAmount,
+                                    sellerUID: widget.sellerUID,
+                                  )));
                     },
                   ),
-              )
+                )
               : Container(),
-
         ],
       ),
     );

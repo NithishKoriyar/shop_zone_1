@@ -94,14 +94,13 @@ class _CartScreenUserState extends State<CartScreenUser> {
               itemBuilder: (context, index) {
                 Carts model =
                     Carts.fromJson(cartItems[index] as Map<String, dynamic>);
-return Padding(
-  padding: const EdgeInsets.all(8.0),
-  child: CartItemDesignWidget(
-    model: model,
-    quantityNumber: model.itemCounter,
-  ),
-);
-
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CartItemDesignWidget(
+                    model: model,
+                    quantityNumber: model.itemCounter,
+                  ),
+                );
               },
             );
           }
