@@ -10,16 +10,14 @@ import '../../api_key.dart';
 class ItemsDetailsScreen extends StatefulWidget {
   Carts? model;
 
-  ItemsDetailsScreen({
-    this.model,
-  });
+  ItemsDetailsScreen({this.model});
 
   @override
   State<ItemsDetailsScreen> createState() => _ItemsDetailsScreenState();
 }
 
 class _ItemsDetailsScreenState extends State<ItemsDetailsScreen> {
-    final CurrentUser currentUserController = Get.put(CurrentUser());
+  final CurrentUser currentUserController = Get.put(CurrentUser());
 
   late String userName;
   late String userEmail;
@@ -28,12 +26,11 @@ class _ItemsDetailsScreenState extends State<ItemsDetailsScreen> {
   int counterLimit = 1;
 
   @override
-    void initState() {
+  void initState() {
     super.initState();
     currentUserController.getUserInfo().then((_) {
       setUserInfo();
       printUserInfo();
-      // Once the seller info is set, call setState to trigger a rebuild.
       setState(() {});
     });
   }
@@ -48,10 +45,18 @@ class _ItemsDetailsScreenState extends State<ItemsDetailsScreen> {
   void printUserInfo() {
     print('user Name: $userName');
     print('user Email: $userEmail');
-    print('user ID: $userID'); // Corrected variable name
+    print('user ID: $userID');
     print('user image: $userImg');
   }
 
+double getTotalPrice() {
+  double itemPrice = double.tryParse(widget.model!.price ?? '0') ?? 0.0;
+  return itemPrice * (widget.model!.itemCounter ?? 0);
+}
+
+
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
@@ -60,12 +65,7 @@ class _ItemsDetailsScreenState extends State<ItemsDetailsScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          // int itemCounter = counterLimit;
-          // cartMethods.addItemToCart(
-          //   widget.model!.itemID.toString(),
-          //   itemCounter,
-          //   userID,
-          // );
+          // Your onPressed logic here
         },
         label: const Text("Buy Now"),
         icon: const Icon(
@@ -81,36 +81,24 @@ class _ItemsDetailsScreenState extends State<ItemsDetailsScreen> {
             Image.network(
               API.getItemsImage + (widget.model!.thumbnailUrl ?? ''),
             ),
-
-            //implement the item counter
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.only(left: 8.0, top: 8.0),
               child: Center(
-                child: CartStepperInt(
-                  count: counterLimit,
-                  size: 50,
-                  // deActiveBackgroundColor: Colors.red,
-                  // activeForegroundColor: Colors.white,
-                  // activeBackgroundColor: Colors.pinkAccent,
-                  didChangeCount: (value) {
-                    if (value < 1) {
-                      Fluttertoast.showToast(
-                          msg: "The quantity cannot be less than 1");
-                      return;
-                    }
-
-                    setState(() {
-                      counterLimit = value;
-                    });
-                  },
+                child: Text(
+                  widget.model!.itemTitle.toString(),
+                  textAlign: TextAlign.justify,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                    color: Colors.black,
+                  ),
                 ),
               ),
             ),
-
             Padding(
               padding: const EdgeInsets.only(left: 8.0, top: 8.0),
               child: Text(
-                widget.model!.itemTitle.toString() + ":",
+                "Quantity :" + widget.model!.itemCounter.toString(),
                 textAlign: TextAlign.justify,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
@@ -119,7 +107,6 @@ class _ItemsDetailsScreenState extends State<ItemsDetailsScreen> {
                 ),
               ),
             ),
-
             Padding(
               padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 6.0),
               child: Text(
@@ -132,7 +119,6 @@ class _ItemsDetailsScreenState extends State<ItemsDetailsScreen> {
                 ),
               ),
             ),
-
             Padding(
               padding: const EdgeInsets.all(10.0),
               child: Text(
@@ -145,7 +131,6 @@ class _ItemsDetailsScreenState extends State<ItemsDetailsScreen> {
                 ),
               ),
             ),
-
             const Padding(
               padding: EdgeInsets.only(left: 8.0, right: 320.0),
               child: Divider(
@@ -154,6 +139,19 @@ class _ItemsDetailsScreenState extends State<ItemsDetailsScreen> {
                 color: Colors.green,
               ),
             ),
+Padding(
+  padding: const EdgeInsets.all(10.0),
+  child: Text(
+    "Total Price : ₹ " + getTotalPrice().toString(),
+    textAlign: TextAlign.justify,
+    style: const TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: 20,
+      color: Colors.black,
+    ),
+  ),
+),
+
 
             const SizedBox(
               height: 30,
