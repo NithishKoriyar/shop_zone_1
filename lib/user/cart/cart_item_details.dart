@@ -111,7 +111,9 @@ class _ItemsDetailsScreenState extends State<ItemsDetailsScreen> {
           FloatingActionButton.extended(
             onPressed: () {
               Navigator.push(
-                  context, MaterialPageRoute(builder: (c) => AddressScreen()));
+                  context, MaterialPageRoute(builder: (c) => AddressScreen(
+                    model: widget.model,
+                    )));
             },
             heroTag: "btn2",
             icon: const Icon(

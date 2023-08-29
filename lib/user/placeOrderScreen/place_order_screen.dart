@@ -15,7 +15,7 @@ class PlaceOrderScreen extends StatefulWidget
   double? totalAmount;
   String? sellerUID;
 
-  PlaceOrderScreen({this.addressID, this.totalAmount, this.sellerUID,});
+  PlaceOrderScreen({this.addressID, this.totalAmount, this.sellerUID, required model,});
 
   @override
   State<PlaceOrderScreen> createState() => _PlaceOrderScreenState();

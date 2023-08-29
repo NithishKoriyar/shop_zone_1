@@ -20,6 +20,7 @@ class AddressDesignWidget extends StatefulWidget {
     this.totalAmount,
     this.sellerUID,
   });
+  
 
   @override
   State<AddressDesignWidget> createState() => _AddressDesignWidgetState();
@@ -144,8 +145,6 @@ class _AddressDesignWidgetState extends State<AddressDesignWidget> {
                     onPressed: () {
                       // Print the values of addressID, sellerUID, and totalAmount
                       print("addressID: ${widget.addressID}");
-                      print("sellerUID: ${widget.sellerUID}");
-                      print("totalAmount: ${widget.totalAmount}");
 
                       //send user to Place Order Screen finally
                       Navigator.push(
@@ -154,7 +153,8 @@ class _AddressDesignWidgetState extends State<AddressDesignWidget> {
                               builder: (c) => PlaceOrderScreen(
                                     addressID: widget.addressID,
                                     totalAmount: widget.totalAmount,
-                                    sellerUID: widget.sellerUID,
+                                    sellerUID: widget.sellerUID, model: null,
+                                    
                                   )));
                     },
                   ),

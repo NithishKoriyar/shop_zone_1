@@ -6,9 +6,9 @@ import 'package:shop_zone/api_key.dart';
 import 'package:shop_zone/user/addressScreens/address_design_widget.dart';
 import 'package:shop_zone/user/addressScreens/save_new_address_screen.dart';
 import 'package:shop_zone/user/assistantMethods/address_changer.dart';
-import 'package:shop_zone/user/global/global.dart';
 import 'package:shop_zone/user/models/address.dart';
 import 'package:http/http.dart' as http;
+import 'package:shop_zone/user/models/cart.dart';
 import 'package:shop_zone/user/userPreferences/current_user.dart';
 
 class AddressScreen extends StatefulWidget {
@@ -17,7 +17,8 @@ class AddressScreen extends StatefulWidget {
 
   AddressScreen({
     this.sellerUID,
-    this.totalAmount,
+    this.totalAmount, 
+    Carts? model,
   });
 
   @override
@@ -116,8 +117,6 @@ class _AddressScreenState extends State<AddressScreen> {
                             index: address.count,
                             value: index,
                             addressID: snapshot.data![index]['id'],
-                            totalAmount: widget.totalAmount,
-                            sellerUID: widget.sellerUID,
                           );
                         },
                         itemCount: snapshot.data!.length,
