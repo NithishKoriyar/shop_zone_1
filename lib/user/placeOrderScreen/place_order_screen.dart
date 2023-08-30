@@ -7,56 +7,64 @@ import 'package:shop_zone/user/global/global.dart';
 import '../sellersScreens/home_screen.dart';
 import 'package:http/http.dart' as http;
 
-
-
-class PlaceOrderScreen extends StatefulWidget
-{
+class PlaceOrderScreen extends StatefulWidget {
   String? addressID;
-  double? totalAmount;
+  int? totalAmount;
   String? sellerUID;
+  String? cartId;
 
-  PlaceOrderScreen({this.addressID, this.totalAmount, this.sellerUID, required model,});
+  PlaceOrderScreen({
+    this.addressID,
+    this.totalAmount,
+    String? cartId,
+  });
 
   @override
   State<PlaceOrderScreen> createState() => _PlaceOrderScreenState();
 }
 
-
-
-class _PlaceOrderScreenState extends State<PlaceOrderScreen>
-{
+class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
   String orderId = DateTime.now().millisecondsSinceEpoch.toString();
+  Future<bool> saveOrderToBackend(Map<String, dynamic> orderData) async {
+    var response = await http.post(
+      Uri.parse("http://yourserver/saveOrder.php"),
+      body: jsonEncode(orderData),
+      headers: {"Content-Type": "application/json"},
+    );
 
-  orderDetails()
-  {
-    saveOrderDetailsForUser(
-        {
-          "addressID": widget.addressID,
-          "totalAmount": widget.totalAmount,
-          "orderBy": sharedPreferences!.getString("uid"),
-          "productIDs": sharedPreferences!.getStringList("userCart"),
-          "paymentDetails": "Cash On Delivery",
-          "orderTime": orderId,
-          "orderId": orderId,
-          "isSuccess": true,
-          "sellerUID": widget.sellerUID,
-          "status": "normal",
-        }).whenComplete(()
-    {
-      saveOrderDetailsForSeller(
-          {
-            "addressID": widget.addressID,
-            "totalAmount": widget.totalAmount,
-            "orderBy": sharedPreferences!.getString("uid"),
-            "productIDs": sharedPreferences!.getStringList("userCart"),
-            "paymentDetails": "Cash On Delivery",
-            "orderTime": orderId,
-            "orderId": orderId,
-            "isSuccess": true,
-            "sellerUID": widget.sellerUID,
-            "status": "normal",
-          }).whenComplete(()
-      {
+    if (response.statusCode == 200) {
+      var data = json.decode(response.body);
+      return data["success"];
+    } else {
+      return false;
+    }
+}
+
+  orderDetails() {
+    saveOrderDetailsForUser({
+      "addressID": widget.addressID,
+      "totalAmount": widget.totalAmount,
+      "orderBy": sharedPreferences!.getString("uid"),
+      "productIDs": sharedPreferences!.getStringList("userCart"),
+      "paymentDetails": "Cash On Delivery",
+      "orderTime": orderId,
+      "orderId": orderId,
+      "isSuccess": true,
+      "sellerUID": widget.sellerUID,
+      "status": "normal",
+    }).whenComplete(() {
+      saveOrderDetailsForSeller({
+        "addressID": widget.addressID,
+        "totalAmount": widget.totalAmount,
+        "orderBy": sharedPreferences!.getString("uid"),
+        "productIDs": sharedPreferences!.getStringList("userCart"),
+        "paymentDetails": "Cash On Delivery",
+        "orderTime": orderId,
+        "orderId": orderId,
+        "isSuccess": true,
+        "sellerUID": widget.sellerUID,
+        "status": "normal",
+      }).whenComplete(() {
         cartMethods.clearCart(context);
 
         //send push notification to seller about new order which placed by user
@@ -64,18 +72,19 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen>
           widget.sellerUID.toString(),
           orderId,
         );
-        
-        Fluttertoast.showToast(msg: "Congratulations, Order has been placed successfully.");
 
-        Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+        Fluttertoast.showToast(
+            msg: "Congratulations, Order has been placed successfully.");
 
-        orderId="";
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => HomeScreen()));
+
+        orderId = "";
       });
     });
   }
 
-  saveOrderDetailsForUser(Map<String, dynamic> orderDetailsMap) async
-  {
+  saveOrderDetailsForUser(Map<String, dynamic> orderDetailsMap) async {
     await FirebaseFirestore.instance
         .collection("users")
         .doc(sharedPreferences!.getString("uid"))
@@ -84,26 +93,22 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen>
         .set(orderDetailsMap);
   }
 
-  saveOrderDetailsForSeller(Map<String, dynamic> orderDetailsMap) async
-  {
+  saveOrderDetailsForSeller(Map<String, dynamic> orderDetailsMap) async {
     await FirebaseFirestore.instance
         .collection("orders")
         .doc(orderId)
         .set(orderDetailsMap);
   }
 
-  sendNotificationToSeller(sellerUID, userOrderID) async
-  {
+  sendNotificationToSeller(sellerUID, userOrderID) async {
     String sellerDeviceToken = "";
 
     await FirebaseFirestore.instance
         .collection("sellers")
         .doc(sellerUID)
         .get()
-        .then((snapshot)
-    {
-      if(snapshot.data()!["sellerDeviceToken"] != null)
-      {
+        .then((snapshot) {
+      if (snapshot.data()!["sellerDeviceToken"] != null) {
         sellerDeviceToken = snapshot.data()!["sellerDeviceToken"].toString();
       }
     });
@@ -115,30 +120,26 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen>
     );
   }
 
-  notificationFormat(sellerDeviceToken, getUserOrderID, userName)
-  {
-    Map<String, String> headerNotification =
-    {
+  notificationFormat(sellerDeviceToken, getUserOrderID, userName) {
+    Map<String, String> headerNotification = {
       'Content-Type': 'application/json',
       'Authorization': fcmServerToken,
     };
 
-    Map bodyNotification =
-    {
-      'body': "Dear seller, New Order (# $getUserOrderID) has placed Successfully from user $userName. \nPlease Check Now",
+    Map bodyNotification = {
+      'body':
+          "Dear seller, New Order (# $getUserOrderID) has placed Successfully from user $userName. \nPlease Check Now",
       'title': "New Order",
     };
 
-    Map dataMap =
-    {
+    Map dataMap = {
       "click_action": "FLUTTER_NOTIFICATION_CLICK",
       "id": "1",
       "status": "done",
       "userOrderId": getUserOrderID,
     };
 
-    Map officialNotificationFormat =
-    {
+    Map officialNotificationFormat = {
       'notification': bodyNotification,
       'data': dataMap,
       'priority': 'high',
@@ -153,31 +154,25 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen>
   }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-
           Image.asset("images/delivery.png"),
-
-          const SizedBox(height: 12,),
-
-          ElevatedButton(
-              onPressed: ()
-              {
-                orderDetails();
-              },
-              style: ElevatedButton.styleFrom(
-                primary: Colors.green,
-              ),
-              child: const Text(
-                "Place Order Now"
-              ),
+          const SizedBox(
+            height: 12,
           ),
-
+          ElevatedButton(
+            onPressed: () {
+              orderDetails();
+            },
+            style: ElevatedButton.styleFrom(
+              primary: Colors.green,
+            ),
+            child: const Text("Place Order Now"),
+          ),
         ],
       ),
     );

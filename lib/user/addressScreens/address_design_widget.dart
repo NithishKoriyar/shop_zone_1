@@ -9,16 +9,18 @@ class AddressDesignWidget extends StatefulWidget {
   int? index;
   int? value;
   String? addressID;
-  double? totalAmount;
   String? sellerUID;
+  String? cartId;
+  int? totalPrice;
 
   AddressDesignWidget({
     this.addressModel,
     this.index,
     this.value,
     this.addressID,
-    this.totalAmount,
     this.sellerUID,
+    this.totalPrice,
+    this.cartId,
   });
   
 
@@ -138,13 +140,14 @@ class _AddressDesignWidgetState extends State<AddressDesignWidget> {
               ? Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: ElevatedButton(
-                    child: const Text("Proceed"),
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.purpleAccent,
+                      backgroundColor: Colors.purpleAccent,
                     ),
                     onPressed: () {
                       // Print the values of addressID, sellerUID, and totalAmount
                       print("addressID: ${widget.addressID}");
+                      print("totalAmount: ${widget.totalPrice}");
+                      print("cartId: ${widget.cartId}");
 
                       //send user to Place Order Screen finally
                       Navigator.push(
@@ -152,11 +155,12 @@ class _AddressDesignWidgetState extends State<AddressDesignWidget> {
                           MaterialPageRoute(
                               builder: (c) => PlaceOrderScreen(
                                     addressID: widget.addressID,
-                                    totalAmount: widget.totalAmount,
-                                    sellerUID: widget.sellerUID, model: null,
+                                    totalAmount: widget.totalPrice, 
+                                    cartId: widget.cartId,
                                     
                                   )));
                     },
+                    child: const Text("Proceed"),
                   ),
                 )
               : Container(),

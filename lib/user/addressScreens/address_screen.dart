@@ -12,14 +12,9 @@ import 'package:shop_zone/user/models/cart.dart';
 import 'package:shop_zone/user/userPreferences/current_user.dart';
 
 class AddressScreen extends StatefulWidget {
-  String? sellerUID;
-  double? totalAmount;
+  Carts? model;
 
-  AddressScreen({
-    this.sellerUID,
-    this.totalAmount, 
-    Carts? model,
-  });
+  AddressScreen({this.model});
 
   @override
   State<AddressScreen> createState() => _AddressScreenState();
@@ -39,7 +34,6 @@ class _AddressScreenState extends State<AddressScreen> {
     currentUserController.getUserInfo().then((_) {
       setUserInfo();
       printUserInfo();
-      // Once the seller info is set, call setState to trigger a rebuild.
       setState(() {});
     });
   }
@@ -54,7 +48,7 @@ class _AddressScreenState extends State<AddressScreen> {
   void printUserInfo() {
     print('user Name: $userName');
     print('user Email: $userEmail');
-    print('user ID: $userID'); // Corrected variable name
+    print('user ID: $userID');
     print('user image: $userImg');
   }
 
@@ -98,10 +92,6 @@ class _AddressScreenState extends State<AddressScreen> {
       ),
       body: Column(
         children: [
-          //query
-          //model
-          //design
-
           Consumer<AddressChanger>(builder: (context, address, c) {
             return Flexible(
               child: StreamBuilder<List<dynamic>>(
@@ -117,6 +107,9 @@ class _AddressScreenState extends State<AddressScreen> {
                             index: address.count,
                             value: index,
                             addressID: snapshot.data![index]['id'],
+                            sellerUID: widget.model?.sellerUID, // assuming you have a sellerUID property in the Carts model
+                            totalPrice:  widget.model?.totalPrice,
+                            cartId: widget.model?.cartId,// assuming you have a totalPrice property in the Carts model
                           );
                         },
                         itemCount: snapshot.data!.length,
@@ -143,27 +136,24 @@ class _AddressScreenState extends State<AddressScreen> {
       print("------address stream-------");
 
       Uri requestUri = Uri.parse('${API.fetchAddress}?uid=$userID');
-      print("Requesting URI: $requestUri"); // Print the URI being requested
+      print("Requesting URI: $requestUri"); 
 
       final response = await http.get(requestUri);
 
       if (response.statusCode == 200) {
-        print(
-            "Data received: ${response.body}"); // Print the data received from the API
+        print("Data received: ${response.body}");
 
         var decodedData = json.decode(response.body);
         if (decodedData is List) {
-          // Ensure the decoded data is a list before yielding
           yield decodedData;
         } else {
-          // Handle the case when the response isn't a list (you can adjust this part as needed)
           yield [];
         }
       } else {
         throw Exception('Failed to load address');
       }
 
-      await Future.delayed(Duration(seconds: 10)); // Adjust the delay as needed
+      await Future.delayed(Duration(seconds: 10));
     }
   }
 }

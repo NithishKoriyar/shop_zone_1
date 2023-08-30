@@ -52,10 +52,6 @@ class _ItemsDetailsScreenState extends State<ItemsDetailsScreen> {
     print('user image: $userImg');
   }
 
-  double getTotalPrice() {
-    double itemPrice = double.tryParse(widget.model!.price ?? '0') ?? 0.0;
-    return itemPrice * (widget.model!.itemCounter ?? 0);
-  }
 
   //!delete item from the cart list
   Future<void> removeItemFromCart(String userID, String itemID) async {
@@ -111,6 +107,7 @@ class _ItemsDetailsScreenState extends State<ItemsDetailsScreen> {
           FloatingActionButton.extended(
             onPressed: () {
               Navigator.push(
+                
                   context, MaterialPageRoute(builder: (c) => AddressScreen(
                     model: widget.model,
                     )));
@@ -195,7 +192,7 @@ class _ItemsDetailsScreenState extends State<ItemsDetailsScreen> {
             Padding(
               padding: const EdgeInsets.all(10.0),
               child: Text(
-                "Total Price : ₹ " + getTotalPrice().toString(),
+                "Total Price : ₹ " + widget.model!.totalPrice.toString(),
                 textAlign: TextAlign.justify,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
