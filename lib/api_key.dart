@@ -21,6 +21,7 @@ class API {
   static const deleteItemFromCart = "$hostConnectUser/deleteItemFromCart.php"; // delete Item From Cart
   static const fetchAddress = "$hostConnectUser/address.php"; // address
   static const addNewAddress = "$hostConnectUser/addNewAddress.php"; // add New Address
+   static const saveOrder = "$hostConnectUser/saveOrder.php"; // save Order
 
   //!------------------------------SELLERS API CONNECTIONS --------------------------------
 

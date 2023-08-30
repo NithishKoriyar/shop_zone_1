@@ -1,9 +1,10 @@
 import 'dart:convert';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
 import 'package:shop_zone/user/global/global.dart';
+import 'package:shop_zone/user/userPreferences/current_user.dart';
+import '../../api_key.dart';
 import '../sellersScreens/home_screen.dart';
 import 'package:http/http.dart' as http;
 
@@ -25,9 +26,15 @@ class PlaceOrderScreen extends StatefulWidget {
 
 class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
   String orderId = DateTime.now().millisecondsSinceEpoch.toString();
+     final CurrentUser currentUserController = Get.put(CurrentUser());
+
+  late String userName;
+  late String userEmail;
+  late String userID;
+  //! save the order
   Future<bool> saveOrderToBackend(Map<String, dynamic> orderData) async {
     var response = await http.post(
-      Uri.parse("http://yourserver/saveOrder.php"),
+      Uri.parse(API.saveOrder),
       body: jsonEncode(orderData),
       headers: {"Content-Type": "application/json"},
     );
@@ -38,80 +45,57 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
     } else {
       return false;
     }
-}
+  }
 
-  orderDetails() {
-    saveOrderDetailsForUser({
+  orderDetails() async {
+    bool isSaved = await saveOrderToBackend({
       "addressID": widget.addressID,
       "totalAmount": widget.totalAmount,
-      "orderBy": sharedPreferences!.getString("uid"),
-      "productIDs": sharedPreferences!.getStringList("userCart"),
+      "orderBy": userID,
+      "productIDs": widget.cartId,
       "paymentDetails": "Cash On Delivery",
       "orderTime": orderId,
       "orderId": orderId,
       "isSuccess": true,
       "sellerUID": widget.sellerUID,
       "status": "normal",
-    }).whenComplete(() {
-      saveOrderDetailsForSeller({
-        "addressID": widget.addressID,
-        "totalAmount": widget.totalAmount,
-        "orderBy": sharedPreferences!.getString("uid"),
-        "productIDs": sharedPreferences!.getStringList("userCart"),
-        "paymentDetails": "Cash On Delivery",
-        "orderTime": orderId,
-        "orderId": orderId,
-        "isSuccess": true,
-        "sellerUID": widget.sellerUID,
-        "status": "normal",
-      }).whenComplete(() {
-        cartMethods.clearCart(context);
-
-        //send push notification to seller about new order which placed by user
-        sendNotificationToSeller(
-          widget.sellerUID.toString(),
-          orderId,
-        );
-
-        Fluttertoast.showToast(
-            msg: "Congratulations, Order has been placed successfully.");
-
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => HomeScreen()));
-
-        orderId = "";
-      });
     });
-  }
 
-  saveOrderDetailsForUser(Map<String, dynamic> orderDetailsMap) async {
-    await FirebaseFirestore.instance
-        .collection("users")
-        .doc(sharedPreferences!.getString("uid"))
-        .collection("orders")
-        .doc(orderId)
-        .set(orderDetailsMap);
-  }
+    if (isSaved) {
+      cartMethods.clearCart(context);
 
-  saveOrderDetailsForSeller(Map<String, dynamic> orderDetailsMap) async {
-    await FirebaseFirestore.instance
-        .collection("orders")
-        .doc(orderId)
-        .set(orderDetailsMap);
+      //send push notification to seller about new order which placed by user
+      sendNotificationToSeller(
+        widget.sellerUID.toString(),
+        orderId,
+      );
+
+      Fluttertoast.showToast(
+          msg: "Congratulations, Order has been placed successfully.");
+
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => HomeScreen()));
+
+      orderId = "";
+    } else {
+      Fluttertoast.showToast(msg: "Error saving order");
+    }
   }
 
   sendNotificationToSeller(sellerUID, userOrderID) async {
     String sellerDeviceToken = "";
 
-    await FirebaseFirestore.instance
-        .collection("sellers")
-        .doc(sellerUID)
-        .get()
-        .then((snapshot) {
-      if (snapshot.data()!["sellerDeviceToken"] != null) {
-        sellerDeviceToken = snapshot.data()!["sellerDeviceToken"].toString();
-      }
-    });
+    // await FirebaseFirestore.instance
+    //     .collection("sellers")
+    //     .doc(sellerUID)
+    //     .get()
+    //     .then(
+    //   (snapshot) {
+    //     if (snapshot.data()!["sellerDeviceToken"] != null) {
+    //       sellerDeviceToken = snapshot.data()!["sellerDeviceToken"].toString();
+    //     }
+    //   },
+    // );
 
     notificationFormat(
       sellerDeviceToken,
@@ -153,7 +137,23 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
     );
   }
 
+
+
   @override
+  void initState() {
+    super.initState();
+    currentUserController.getUserInfo().then((_) {
+      setUserInfo();
+      // Once the seller info is set, call setState to trigger a rebuild.
+      setState(() {});
+    });
+  }
+
+  void setUserInfo() {
+    userName = currentUserController.user.user_name;
+    userEmail = currentUserController.user.user_email;
+    userID = currentUserController.user.user_id.toString();
+  }
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
