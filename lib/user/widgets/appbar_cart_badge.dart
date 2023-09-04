@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:provider/provider.dart';
-import 'package:shop_zone/user/assistantMethods/cart_item_counter.dart';
-import 'package:shop_zone/user/cartScreens/cart_screen.dart';
 
 
+// ignore: must_be_immutable
 class AppBarWithCartBadge extends StatefulWidget implements PreferredSizeWidget
 {
   PreferredSizeWidget? preferredSizeWidget;

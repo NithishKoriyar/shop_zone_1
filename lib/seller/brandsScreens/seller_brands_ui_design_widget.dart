@@ -11,6 +11,7 @@ import 'package:shop_zone/seller/splashScreen/seller_my_splash_screen.dart';
 import '../../api_key.dart';
 import '../itemsScreens/seller_items_screen.dart';
 
+// ignore: must_be_immutable
 class BrandsUiDesignWidget extends StatefulWidget {
   Brands? model;
   BuildContext? context;

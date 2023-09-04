@@ -9,6 +9,7 @@ import 'package:shop_zone/seller/splashScreen/seller_my_splash_screen.dart';
 import 'package:http/http.dart' as http;
 import '../../api_key.dart';
 
+// ignore: must_be_immutable
 class ItemsDetailsScreen extends StatefulWidget {
   Items? model;
 

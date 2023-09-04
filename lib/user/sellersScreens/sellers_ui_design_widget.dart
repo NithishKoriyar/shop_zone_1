@@ -5,6 +5,7 @@ import 'package:smooth_star_rating_nsafe/smooth_star_rating.dart';
 import '../../api_key.dart';
 import '../brandsScreens/brands_screen.dart';
 
+// ignore: must_be_immutable
 class SellersUIDesignWidget extends StatefulWidget {
   Sellers? model;
 
@@ -58,6 +59,7 @@ class _SellersUIDesignWidgetState extends State<SellersUIDesignWidget> {
                   ),
                 ),
                 SmoothStarRating(
+                  // ignore: unnecessary_null_comparison
                   rating: widget.model!.rating == null
                       ? 0.0
                       : double.parse(widget.model!.rating.toString()),

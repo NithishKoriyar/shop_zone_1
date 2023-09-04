@@ -60,9 +60,7 @@ class _MyDrawerState extends State<MyDrawer>
   @override
   Widget build(BuildContext context) {
     // Check if sellerImg is null before accessing it.
-    Widget profileImage = sellerImg.isNotEmpty
-        ? Image.network(sellerImg)
-        : Icon(Icons.account_circle); // Placeholder if sellerImg is empty.
+// Placeholder if sellerImg is empty.
 
     return Drawer(
       backgroundColor: Colors.black54,
@@ -177,7 +175,7 @@ class _MyDrawerState extends State<MyDrawer>
                   ),
                   onTap: ()
                   {
-                    Navigator.push(context, MaterialPageRoute(builder: (c)=> ShiftedParcelsScreen()));
+                    //Navigator.push(context, MaterialPageRoute(builder: (c)=> ShiftedParcelsScreen()));
                   },
                 ),
                 const Divider(
@@ -195,7 +193,7 @@ class _MyDrawerState extends State<MyDrawer>
                   ),
                   onTap: ()
                   {
-                    Navigator.push(context, MaterialPageRoute(builder: (c)=> HistoryScreen()));
+                    //Navigator.push(context, MaterialPageRoute(builder: (c)=> HistoryScreen()));
                   },
                 ),
                 const Divider(
@@ -214,7 +212,7 @@ class _MyDrawerState extends State<MyDrawer>
                   onTap: ()
                   {
                      RememberSellerPrefs.removeSellerInfo();
-                    Navigator.push(context, MaterialPageRoute(builder: (c)=> SellerSplashScreen()));
+                    Navigator.push(context, MaterialPageRoute(builder: (c)=> const SellerSplashScreen()));
                   },
                 ),
                 const Divider(

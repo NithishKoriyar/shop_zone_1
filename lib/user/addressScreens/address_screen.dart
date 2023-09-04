@@ -11,6 +11,7 @@ import 'package:http/http.dart' as http;
 import 'package:shop_zone/user/models/cart.dart';
 import 'package:shop_zone/user/userPreferences/current_user.dart';
 
+// ignore: must_be_immutable
 class AddressScreen extends StatefulWidget {
   Carts? model;
 
@@ -109,7 +110,8 @@ class _AddressScreenState extends State<AddressScreen> {
                             addressID: snapshot.data![index]['id'],
                             sellerUID: widget.model?.sellerUID, // assuming you have a sellerUID property in the Carts model
                             totalPrice:  widget.model?.totalPrice,
-                            cartId: widget.model?.cartId,// assuming you have a totalPrice property in the Carts model
+                            cartId: widget.model?.cartId,
+                            model: widget.model,// assuming you have a totalPrice property in the Carts model
                           );
                         },
                         itemCount: snapshot.data!.length,

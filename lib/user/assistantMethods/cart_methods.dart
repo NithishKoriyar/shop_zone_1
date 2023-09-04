@@ -42,33 +42,7 @@ Future<void> addItemToCart(String itemId, int itemCounter, String userID) async 
   }
 }
 
-Future<void> clearCart(BuildContext context) async {
-  final String apiUrl = "https://yourserver.com/path/to/clearcart.php";
 
-  // Clear in local storage
-  sharedPreferences!.setStringList("userCart", ["initialValue"]);
-
-  final response = await http.post(
-    Uri.parse(apiUrl),
-    body: {
-      "userId": sharedPreferences!.getString("uid")!,
-    },
-  );
-
-  if (response.statusCode == 200) {
-    final Map<String, dynamic> responseData = json.decode(response.body);
-    if (responseData.containsKey("message")) {
-      print(responseData["message"]);  // You can replace this print with a toast message or any other method to notify the user.
-
-      // Update item badge number
-      //Provider.of<CartItemCounter>(context, listen: false).showCartListItemsNumber();
-    } else {
-      print("Unexpected response from the server");
-    }
-  } else {
-    print("Failed to clear the cart. Status code: ${response.statusCode}");
-  }
-}
 
 
 

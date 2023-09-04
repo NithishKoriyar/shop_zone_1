@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_zone/user/assistantMethods/address_changer.dart';
 import 'package:shop_zone/user/models/address.dart';
+import 'package:shop_zone/user/models/cart.dart';
 import 'package:shop_zone/user/placeOrderScreen/place_order_screen.dart';
 
+// ignore: must_be_immutable
 class AddressDesignWidget extends StatefulWidget {
   Address? addressModel;
+  Carts? model;
   int? index;
   int? value;
   String? addressID;
@@ -15,12 +18,13 @@ class AddressDesignWidget extends StatefulWidget {
 
   AddressDesignWidget({
     this.addressModel,
+    this.model,
     this.index,
     this.value,
     this.addressID,
     this.sellerUID,
     this.totalPrice,
-    this.cartId,
+    this.cartId, 
   });
   
 
@@ -157,6 +161,7 @@ class _AddressDesignWidgetState extends State<AddressDesignWidget> {
                                     addressID: widget.addressID,
                                     totalAmount: widget.totalPrice, 
                                     cartId: widget.cartId,
+                                    model: widget.model,
                                     
                                   )));
                     },

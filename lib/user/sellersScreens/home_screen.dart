@@ -1,13 +1,9 @@
 import 'dart:convert';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:provider/provider.dart';
 import 'package:shop_zone/api_key.dart';
-import 'package:shop_zone/user/assistantMethods/cart_item_counter.dart';
-import 'package:shop_zone/user/cartScreens/cart_screen.dart';
 import 'package:shop_zone/user/global/global.dart';
 import 'package:shop_zone/user/models/sellers.dart';
 import 'package:shop_zone/user/sellersScreens/sellers_ui_design_widget.dart';

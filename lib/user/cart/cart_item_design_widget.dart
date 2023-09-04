@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shop_zone/api_key.dart';
 import 'package:shop_zone/user/cart/cart_item_details.dart';
 import 'package:shop_zone/user/models/cart.dart';
-import 'package:shop_zone/user/models/items.dart';
 
+// ignore: must_be_immutable
 class CartItemDesignWidget extends StatefulWidget {
   Carts? model;
   int? quantityNumber;

@@ -1,7 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:convert';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:shop_zone/user/global/global.dart';
+import 'package:shop_zone/user/models/orders.dart';
 import 'package:shop_zone/user/ordersScreens/order_card.dart';
+import 'package:shop_zone/user/userPreferences/current_user.dart';
+import '../../api_key.dart';
 
 class OrdersScreen extends StatefulWidget {
   const OrdersScreen({Key? key}) : super(key: key);
@@ -11,89 +16,109 @@ class OrdersScreen extends StatefulWidget {
 }
 
 class _OrdersScreenState extends State<OrdersScreen> {
+  List<int>? itemQuantityList;
+  final CurrentUser currentUserController = Get.put(CurrentUser());
+
+  late String userName;
+  late String userEmail;
+  late String userID;
+  late String userImg;
+
+  @override
+  void initState() {
+    super.initState();
+
+    currentUserController.getUserInfo().then((_) {
+      setUserInfo();
+      printUserInfo();
+      // Once the seller info is set, call setState to trigger a rebuild.
+      setState(() {});
+    });
+  }
+
+  void setUserInfo() {
+    userName = currentUserController.user.user_name;
+    userEmail = currentUserController.user.user_email;
+    userID = currentUserController.user.user_id.toString();
+    userImg = currentUserController.user.user_profile;
+  }
+
+  void printUserInfo() {
+    print('user Name: $userName');
+    print('user Email: $userEmail');
+    print('user ID: $userID'); // Corrected variable name
+    print('user image: $userImg');
+  }
+
+  List<dynamic> items = [];
+  bool isLoading = true;
+
+  Stream<List<dynamic>> fetchOrders() async* {
+    // Assuming your API endpoint is something like this
+    const String apiUrl = API.ordersView;
+
+    try {
+      final response =
+          await http.post(Uri.parse(apiUrl), body: {'userID': userID});
+
+      print("Response Status Code: ${response.statusCode}");
+      print("Response Body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+
+        if (responseData.containsKey('error')) {
+          // If there's an error message in the response
+          print("Server Error: ${responseData['error']}");
+          yield []; // yield an empty list or handle error differently
+        } else {
+          final List<dynamic> fetchedItems = responseData['orders'] ?? [];
+          // Assuming the fetched items are under the 'orders' key. Use a null check just in case.
+          yield fetchedItems;
+          print(fetchedItems);
+        }
+      } else {
+        print("Error fetching cart items");
+        yield []; // yield an empty list or handle error differently
+      }
+    } catch (e) {
+      print("Exception while fetching orders: $e");
+      yield [];
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
       appBar: AppBar(
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors:
-                [
-                  Colors.pinkAccent,
-                  Colors.purpleAccent,
-                ],
-                begin: FractionalOffset(0.0, 0.0),
-                end: FractionalOffset(1.0, 0.0),
-                stops: [0.0, 1.0],
-                tileMode: TileMode.clamp,
-              )
-          ),
-        ),
-        title: const Text(
-          "My Orders",
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        title: const Text("Orders"),
+        backgroundColor: Colors.black,
         centerTitle: true,
-        automaticallyImplyLeading: true,
       ),
-      body: StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection("users")
-            .doc(sharedPreferences!.getString("uid"))
-            .collection("orders")
-            .where("status", isEqualTo: "normal")
-            .orderBy("orderTime", descending: true)
-            .snapshots(),
-        builder: (c, AsyncSnapshot dataSnapShot)
-        {
-          if(dataSnapShot.hasData)
-          {
+      body: StreamBuilder<List<dynamic>>(
+        stream: fetchOrders(),
+        builder: (context, dataSnapshot) {
+          if (dataSnapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+                child: CircularProgressIndicator()); // Show loading indicator
+          } else if (!dataSnapshot.hasData || dataSnapshot.data!.isEmpty) {
+            return const Center(
+                child: Text('No Orders')); // Show loading indicator
+          } else {
+            List<dynamic> orderItems = dataSnapshot.data!;
             return ListView.builder(
-              itemCount: dataSnapShot.data.docs.length,
-              itemBuilder: (c, index)
-              {
-                return FutureBuilder(
-                  future: FirebaseFirestore.instance
-                      .collection("items")
-                      .where("itemID", whereIn: cartMethods.separateOrderItemIDs((dataSnapShot.data.docs[index].data() as Map<String, dynamic>)["productIDs"]))
-                      .where("orderBy", whereIn: (dataSnapShot.data.docs[index].data() as Map<String, dynamic>)["uid"])
-                      .orderBy("publishedDate", descending: true)
-                      .get(),
-                  builder: (c, AsyncSnapshot snapshot)
-                  {
-                    if(snapshot.hasData)
-                    {
-                      return OrderCard(
-                        itemCount: snapshot.data.docs.length,
-                        data: snapshot.data.docs,
-                        orderId: dataSnapShot.data.docs[index].id,
-                        seperateQuantitiesList: cartMethods.separateOrderItemsQuantities((dataSnapShot.data.docs[index].data() as Map<String, dynamic>)["productIDs"]),
-                      );
-                    }
-                    else
-                    {
-                      return const Center(
-                        child: Text(
-                          "No data exists.",
-                        ),
-                      );
-                    }
-                  },
+              itemCount: orderItems.length,
+              itemBuilder: (context, index) {
+                Orders model =
+                    Orders.fromJson(orderItems[index] as Map<String, dynamic>);
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: OrderCard(
+                    model: model,
+                    quantityNumber: model.itemQuantity,
+                  ),
                 );
               },
-            );
-          }
-          else
-          {
-            return const Center(
-              child: Text(
-                "No data exists.",
-              ),
             );
           }
         },

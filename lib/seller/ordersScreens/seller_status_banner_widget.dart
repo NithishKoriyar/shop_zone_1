@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../brandsScreens/seller_home_screen.dart';
 
 
+// ignore: must_be_immutable
 class StatusBanner extends StatelessWidget
 {
   bool? status;

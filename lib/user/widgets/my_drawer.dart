@@ -1,9 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:shop_zone/seller/splashScreen/seller_my_splash_screen.dart';
 import 'package:shop_zone/user/cart/cart_screen.dart';
+import 'package:shop_zone/user/notYetReceivedParcels/not_yet_received_parcels_screen.dart';
 import 'package:shop_zone/user/ordersScreens/orders_screen.dart';
 import 'package:shop_zone/user/sellersScreens/home_screen.dart';
 import 'package:shop_zone/user/splashScreen/my_splash_screen.dart';
@@ -53,9 +53,7 @@ class _MyDrawerState extends State<MyDrawer> {
   @override
   Widget build(BuildContext context) {
     // Check if sellerImg is null before accessing it.
-    Widget profileImage = userImg.isNotEmpty
-        ? Image.network(userImg)
-        : Icon(Icons.account_circle); // Placeholder if sellerImg is empty.
+// Placeholder if sellerImg is empty.
 
     return Drawer(
       backgroundColor: Colors.black54,
@@ -127,7 +125,7 @@ class _MyDrawerState extends State<MyDrawer> {
                   thickness: 2,
                 ),
 
-                                ListTile(
+                ListTile(
                   leading: const Icon(
                     Icons.shopping_cart,
                     color: Colors.white,
@@ -137,7 +135,8 @@ class _MyDrawerState extends State<MyDrawer> {
                     style: TextStyle(color: Colors.white),
                   ),
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (c)=> CartScreenUser()));
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (c) => CartScreenUser()));
                   },
                 ),
                 const Divider(
@@ -157,7 +156,10 @@ class _MyDrawerState extends State<MyDrawer> {
                     style: TextStyle(color: Colors.white),
                   ),
                   onTap: () {
-                    //Navigator.push(context, MaterialPageRoute(builder: (c)=> OrdersScreen()));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (c) => const OrdersScreen()));
                   },
                 ),
                 const Divider(
@@ -177,7 +179,7 @@ class _MyDrawerState extends State<MyDrawer> {
                     style: TextStyle(color: Colors.white),
                   ),
                   onTap: () {
-                    //Navigator.push(context, MaterialPageRoute(builder: (c)=> NotYetReceivedParcelsScreen()));
+                    Navigator.push(context, MaterialPageRoute(builder: (c)=> NotYetReceivedParcelsScreen()));
                   },
                 ),
                 const Divider(
@@ -226,8 +228,6 @@ class _MyDrawerState extends State<MyDrawer> {
                   thickness: 2,
                 ),
 
-
-
                 //logout
                 ListTile(
                   leading: const Icon(
@@ -259,7 +259,10 @@ class _MyDrawerState extends State<MyDrawer> {
                     style: TextStyle(color: Colors.white),
                   ),
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (c)=> const SellerSplashScreen()));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (c) => const SellerSplashScreen()));
                   },
                 ),
                 const Divider(

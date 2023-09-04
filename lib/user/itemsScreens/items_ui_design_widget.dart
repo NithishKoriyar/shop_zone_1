@@ -7,6 +7,7 @@ import 'items_details_screen.dart';
 
 
 
+// ignore: must_be_immutable
 class ItemsUiDesignWidget extends StatefulWidget
 {
   Items? model;

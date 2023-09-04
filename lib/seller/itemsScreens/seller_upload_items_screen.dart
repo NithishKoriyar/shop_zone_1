@@ -14,6 +14,7 @@ import 'package:shop_zone/seller/splashScreen/seller_my_splash_screen.dart';
 import 'package:shop_zone/seller/widgets/seller_progress_bar.dart';
 
 
+// ignore: must_be_immutable
 class UploadItemsScreen extends StatefulWidget
 {
   Brands? model;

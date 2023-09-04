@@ -8,6 +8,7 @@ import 'package:shop_zone/user/userPreferences/current_user.dart';
 import 'package:shop_zone/user/widgets/appbar_cart_badge.dart';
 import '../../api_key.dart';
 
+// ignore: must_be_immutable
 class ItemsDetailsScreen extends StatefulWidget {
   Items? model;
 

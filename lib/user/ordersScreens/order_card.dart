@@ -1,167 +1,140 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:shop_zone/user/models/items.dart';
+import 'package:shop_zone/api_key.dart';
+import 'package:shop_zone/user/models/orders.dart';
 import 'package:shop_zone/user/ordersScreens/order_details_screen.dart';
 
 // ignore: must_be_immutable
-class OrderCard extends StatefulWidget
-{
-  int? itemCount;
-  List<DocumentSnapshot>? data;
-  String? orderId;
-  List<String>? seperateQuantitiesList;
+class OrderCard extends StatefulWidget {
+  Orders? model;
+  int? quantityNumber;
 
   OrderCard({
-    this.itemCount,
-    this.data,
-    this.orderId,
-    this.seperateQuantitiesList,
+    this.model,
+    this.quantityNumber,
   });
-
+ 
   @override
   State<OrderCard> createState() => _OrderCardState();
 }
 
-class _OrderCardState extends State<OrderCard>
-{
+class _OrderCardState extends State<OrderCard> {
+  
   @override
-  Widget build(BuildContext context)
-  {
-    return GestureDetector(
-      onTap: ()
-      {
-        Navigator.push(context, MaterialPageRoute(builder: (c)=> OrderDetailsScreen(
-            orderID: widget.orderId,
-        )));
+  
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (c) => OrderDetailsScreen(
+              model: widget.model,
+            ),
+          ),
+        );
       },
       child: Card(
-        color: Colors.black,
-        elevation: 10,
+        color: Colors.white,
         shadowColor: Colors.white54,
-        child: Container(
-          color: Colors.transparent,
-          padding: const EdgeInsets.all(10),
-          margin: const EdgeInsets.all(10),
-          height: widget.itemCount! * 125, //2*125
-          child: ListView.builder(
-            itemCount: widget.itemCount,
-            itemBuilder: (context, index)
-            {
-              Items model = Items.fromJson(widget.data![index].data() as Map<String, dynamic>);
-              return placedOrdersItemsDesignWidget(model, context, widget.seperateQuantitiesList![index]);
-            },
+        elevation: 10,
+        child: Padding(
+          padding: const EdgeInsets.all(6.0),
+          child: SizedBox(
+            height: 100,
+            width: MediaQuery.of(context).size.width,
+            child: Row(
+              children: [
+                //image
+                Image.network(
+                  API.getItemsImage + (widget.model!.thumbnailUrl ?? ''),
+                  width: 140,
+                  height: 120,
+                ),
+
+                const SizedBox(
+                  width: 6,
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.only(left: 14.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      //title
+                      Text(
+                        widget.model!.itemTitle.toString(),
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+
+                      const SizedBox(
+                        height: 2,
+                      ),
+
+                      //Price: ₹ 12
+                      Row(
+                        children: [
+                          const Text(
+                            "Price: ",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 15,
+                            ),
+                          ),
+                          const Text(
+                            "₹ ",
+                            style: TextStyle(
+                              color: Colors.green,
+                              fontSize: 18,
+                            ),
+                          ),
+                          Text(
+                            widget.model!.price.toString(),
+                            style: const TextStyle(
+                              color: Colors.green,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(
+                        height: 4,
+                      ),
+
+                      //Quantity: 4
+                      Row(
+                        children: [
+                          const Text(
+                            "Quantity: ",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 18,
+                            ),
+                          ),
+                          Text(
+                           widget.model!.itemQuantity.toString(),
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
-}
-
-
-Widget placedOrdersItemsDesignWidget(Items items, BuildContext context, itemQuantity)
-{
-  return Container(
-    width: MediaQuery.of(context).size.width,
-    height: 120,
-    color: Colors.transparent,
-    child: Row(
-      children: [
-
-        ClipRRect(
-          borderRadius: BorderRadius.circular(20),
-          child: Image.network(
-            items.thumbnailUrl.toString(),
-            width: 120,
-          ),
-        ),
-
-        const SizedBox(width: 10.0,),
-
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.only(left: 8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-
-                const SizedBox(
-                  height: 20,
-                ),
-
-                //title and price
-                Row(
-                  children: [
-
-                    Expanded(
-                      child: Text(
-                        items.itemTitle.toString(),
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(
-                      width: 10,
-                    ),
-
-                    const Text(
-                      "₹ ",
-                      style: TextStyle(
-                        color: Colors.purpleAccent,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-
-                    Text(
-                      items.price.toString(),
-                      style: const TextStyle(
-                        color: Colors.purpleAccent,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-
-                  ],
-                ),
-
-                const SizedBox(
-                  height: 20,
-                ),
-
-                //x with quantity
-                Row(
-                  children: [
-
-                    const Text(
-                      "x ",
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 14,
-                      ),
-                    ),
-
-                    Text(
-                      itemQuantity,
-                      style: const TextStyle(
-                        color: Colors.grey,
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-
-                  ],
-                ),
-
-              ],
-            ),
-          ),
-        ),
-
-      ],
-    ),
-  );
 }

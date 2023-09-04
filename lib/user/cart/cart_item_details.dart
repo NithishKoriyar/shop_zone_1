@@ -1,4 +1,4 @@
-import 'package:cart_stepper/cart_stepper.dart';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
@@ -10,6 +10,7 @@ import 'package:shop_zone/user/widgets/appbar_cart_badge.dart';
 import '../../api_key.dart';
 import 'package:http/http.dart' as http;
 
+// ignore: must_be_immutable
 class ItemsDetailsScreen extends StatefulWidget {
   Carts? model;
 
@@ -148,7 +149,7 @@ class _ItemsDetailsScreenState extends State<ItemsDetailsScreen> {
             Padding(
               padding: const EdgeInsets.only(left: 8.0, top: 8.0),
               child: Text(
-                "Quantity :" + widget.model!.itemCounter.toString(),
+                "Quantity :${widget.model!.itemCounter}",
                 textAlign: TextAlign.justify,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
@@ -172,7 +173,7 @@ class _ItemsDetailsScreenState extends State<ItemsDetailsScreen> {
             Padding(
               padding: const EdgeInsets.all(10.0),
               child: Text(
-                "₹ " + widget.model!.price.toString(),
+                "₹ ${widget.model!.price}",
                 textAlign: TextAlign.justify,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,

@@ -9,6 +9,7 @@ import '../splashScreen/seller_my_splash_screen.dart';
 import 'package:http/http.dart' as http;
 
 
+// ignore: must_be_immutable
 class AddressDesign extends StatelessWidget
 {
   Address? model;

@@ -14,6 +14,7 @@ import 'package:shop_zone/seller/sellerPreferences/current_seller.dart';
 import '../models/seller_brands.dart';
 import '../widgets/seller_text_delegate_header_widget.dart';
 
+// ignore: must_be_immutable
 class ItemsScreen extends StatefulWidget {
   Brands? model;
 

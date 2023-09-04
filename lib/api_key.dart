@@ -1,6 +1,6 @@
 class API {
   static const hostConnect =
-      "http://192.168.48.130/Amazon%20Clone/shop_zone/shop_zone_api/";
+      "http://192.168.13.120/Amazon%20Clone/shop_zone/shop_zone_api/";
   //!------------------------------USER API CONNECTIONS --------------------------------
 
   static const hostConnectUser = "$hostConnect/user";
@@ -18,10 +18,17 @@ class API {
       "$hostConnectUser/userItemView.php"; //get seller Brand items
   static const addToCart = "$hostConnectUser/addToCart.php"; // add To Cart
   static const cartView = "$hostConnectUser/cartView.php"; // add To Cart
-  static const deleteItemFromCart = "$hostConnectUser/deleteItemFromCart.php"; // delete Item From Cart
+  static const deleteItemFromCart =
+      "$hostConnectUser/deleteItemFromCart.php"; // delete Item From Cart
   static const fetchAddress = "$hostConnectUser/address.php"; // address
-  static const addNewAddress = "$hostConnectUser/addNewAddress.php"; // add New Address
-   static const saveOrder = "$hostConnectUser/saveOrder.php"; // save Order
+  static const addNewAddress =
+      "$hostConnectUser/addNewAddress.php"; // add New Address
+  static const saveOrder = "$hostConnectUser/saveOrder.php"; // save Order
+  static const getUserOrders =
+      "$hostConnectUser/getUserOrders.php"; // get User Orders
+  static const getOrderItems =
+      "$hostConnectUser/getOrderItems.php"; // get Order Items
+       static const ordersView = "$hostConnectUser/ordersView.php"; // ordersView
 
   //!------------------------------SELLERS API CONNECTIONS --------------------------------
 
@@ -49,4 +56,5 @@ class API {
   static const getItems = "$hostConnectSeller/getItems.php"; //get items
   static const getItemsImage = "$hostConnectSeller/"; //get items
   static const deleteItems = "$hostConnectSeller/deleteItem.php"; //get items
+  static const sellerOrdersView = "$hostConnectSeller/ordersView.php"; // ordersView
 }

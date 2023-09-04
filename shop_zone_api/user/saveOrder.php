@@ -1,29 +1,38 @@
 <?php
+
+header('Content-Type: application/json');
+
 include '../db_config.php';
 
-$data = json_decode(file_get_contents("php://input"));
+// Assuming POST data is sent as JSON
+$data = json_decode(file_get_contents('php://input'), true);
 
-$addressID = mysqli_real_escape_string($connectNow, $data->addressID);
-$totalAmount = mysqli_real_escape_string($connectNow, $data->totalAmount);
-$orderBy = mysqli_real_escape_string($connectNow, $data->orderBy);
-$productIDs = mysqli_real_escape_string($connectNow, json_encode($data->productIDs));  // since this is a list in Flutter
-$paymentDetails = mysqli_real_escape_string($connectNow, $data->paymentDetails);
-$orderTime = mysqli_real_escape_string($connectNow, $data->orderTime);
-$orderId = mysqli_real_escape_string($connectNow, $data->orderId);
-$isSuccess = mysqli_real_escape_string($connectNow, $data->isSuccess);
-$sellerUID = mysqli_real_escape_string($connectNow, $data->sellerUID);
-$status = mysqli_real_escape_string($connectNow, $data->status);
+$response = [];
 
-$sql = "INSERT INTO users_orders (orderId, addressID, totalAmount, orderBy, productIDs, paymentDetails, orderTime, isSuccess, sellerUID, status) 
-        VALUES ('$orderId', '$addressID', $totalAmount, '$orderBy', '$productIDs', '$paymentDetails', '$orderTime', $isSuccess, '$sellerUID', '$status')";
+$query = sprintf("INSERT INTO users_orders (addressID, totalAmount, orderBy, productIDs, paymentDetails, orderTime, orderId, isSuccess, sellerUID, status, itemQuantity, itemID) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+    $connectNow->real_escape_string($data["addressID"]),
+    $connectNow->real_escape_string($data["totalAmount"]),
+    $connectNow->real_escape_string($data["orderBy"]),
+    $connectNow->real_escape_string($data["productIDs"]),
+    $connectNow->real_escape_string($data["paymentDetails"]),
+    $connectNow->real_escape_string($data["orderTime"]),
+    $connectNow->real_escape_string($data["orderId"]),
+    $connectNow->real_escape_string($data["isSuccess"]),
+    $connectNow->real_escape_string($data["sellerUID"]),
+    $connectNow->real_escape_string($data["status"]),
+    $connectNow->real_escape_string($data["itemQuantity"]),
+    $connectNow->real_escape_string($data["itemID"])
+);
 
-$result = $connectNow->query($sql);
-
-if ($result) {
-    echo json_encode(["success" => true]);
+if ($connectNow->query($query) === TRUE) {
+    $response['success'] = true;
+    $response['message'] = "Order saved successfully!";
 } else {
-    echo json_encode(["success" => false, "error" => $connectNow->error]);
+    $response['success'] = false;
+    $response['message'] = "Error: " . $query . "<br>" . $connectNow->error;
 }
 
+echo json_encode($response);
 $connectNow->close();
+
 ?>

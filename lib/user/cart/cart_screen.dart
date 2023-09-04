@@ -63,6 +63,7 @@ class _CartScreenUserState extends State<CartScreenUser> {
     if (response.statusCode == 200) {
       final List<dynamic> fetchedItems = json.decode(response.body);
       yield fetchedItems;
+      print("fetchedItems");
       print(fetchedItems);
     } else {
       print("Error fetching cart items");

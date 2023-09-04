@@ -1,14 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shop_zone/user/itemsScreens/items_screen.dart';
 import '../../api_key.dart';
-import '../global/global.dart';
 import '../models/brands.dart';
-import '../splashScreen/my_splash_screen.dart';
 
 
 
+// ignore: must_be_immutable
 class BrandsUiDesignWidget extends StatefulWidget
 {
   Brands? model;

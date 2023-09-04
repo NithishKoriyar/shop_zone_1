@@ -7,7 +7,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shop_zone/seller/brandsScreens/seller_home_screen.dart';
 import 'package:shop_zone/seller/sellerPreferences/current_seller.dart';
 import 'package:shop_zone/seller/splashScreen/seller_my_splash_screen.dart';
-import 'package:shop_zone/user/models/sellers.dart';
 import '../../api_key.dart';
 import '../widgets/seller_progress_bar.dart';
 import 'package:http/http.dart' as http;

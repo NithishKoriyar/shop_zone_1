@@ -4,6 +4,7 @@ import 'package:shop_zone/seller/models/seller_items.dart';
 
 import '../../api_key.dart';
 
+// ignore: must_be_immutable
 class ItemsUiDesignWidget extends StatefulWidget
 {
   Items? model;

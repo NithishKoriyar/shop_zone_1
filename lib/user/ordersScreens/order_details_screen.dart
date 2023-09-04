@@ -1,163 +1,160 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:shop_zone/user/models/address.dart';
-import 'package:shop_zone/user/ordersScreens/address_design_widget.dart';
-import 'package:shop_zone/user/ordersScreens/status_banner_widget.dart';
-
-import '../global/global.dart';
-
+import 'package:shop_zone/user/ordersScreens/orders_screen.dart';
+import 'package:shop_zone/user/models/orders.dart';
 
 // ignore: must_be_immutable
-class OrderDetailsScreen extends StatefulWidget
-{
-  String? orderID;
+class OrderDetailsScreen extends StatefulWidget {
+  Orders? model;
 
-  OrderDetailsScreen({this.orderID,});
+  OrderDetailsScreen({
+    this.model,
+  });
 
   @override
   State<OrderDetailsScreen> createState() => _OrderDetailsScreenState();
 }
 
-
-
-class _OrderDetailsScreenState extends State<OrderDetailsScreen>
-{
+class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   String orderStatus = "";
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       body: SingleChildScrollView(
-        child: FutureBuilder(
-          future: FirebaseFirestore.instance
-              .collection("users")
-              .doc(sharedPreferences!.getString("uid"))
-              .collection("orders")
-              .doc(widget.orderID)
-              .get(),
-          builder: (c, AsyncSnapshot dataSnapshot)
-          {
-            Map? orderDataMap;
-            if(dataSnapshot.hasData)
-            {
-              orderDataMap = dataSnapshot.data.data() as Map<String, dynamic>;
-              orderStatus = orderDataMap["status"].toString();
-
-              return Column(
-                children: [
-
-                  StatusBanner(
-                    status: orderDataMap["isSuccess"],
-                    orderStatus: orderStatus,
-                  ),
-
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "₹ " + orderDataMap["totalAmount"].toString(),
-                        style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: Text(
-                        "Order ID = " + orderDataMap["orderId"].toString(),
-                        style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: Text(
-                        "Order at = " + DateFormat("dd MMMM, yyyy - hh:mm aa")
-                            .format(DateTime.fromMillisecondsSinceEpoch(int.parse(orderDataMap["orderTime"]))),
-                        style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  const Divider(
-                    thickness: 1,
-                    color: Colors.pinkAccent,
-                  ),
-
-                  orderStatus == "ended"
-                      ? Image.asset("images/delivered.png")
-                      : Image.asset("images/state.png"),
-
-                  const Divider(
-                    thickness: 1,
-                    color: Colors.pinkAccent,
-                  ),
-
-                  FutureBuilder(
-                    future: FirebaseFirestore.instance
-                        .collection("users")
-                        .doc(sharedPreferences!.getString("uid"))
-                        .collection("userAddress")
-                        .doc(orderDataMap["addressID"])
-                        .get(),
-                    builder: (c, AsyncSnapshot snapshot)
-                    {
-                      if(snapshot.hasData)
-                      {
-                        return AddressDesign(
-                          model: Address.fromJson(
-                              snapshot.data.data() as Map<String, dynamic>
-                          ),
-                          orderStatus: orderStatus,
-                          orderId: widget.orderID,
-                          sellerId: orderDataMap!["sellerUID"],
-                          orderByUser: orderDataMap["orderBy"],
-                        );
-                      }
-                      else
-                      {
-                        return const Center(
-                          child: Text(
-                            "No data exists.",
-                          ),
-                        );
-                      }
-                    },
-                  ),
-
-                ],
-              );
-            }
-            else
-            {
-              return const Center(
-                child: Text(
-                  "No data exists.",
+          child: Column(
+        children: [
+          const SizedBox(
+            height: 25,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "status :${widget.model?.orderStatus}",
+                style: const TextStyle(
+                  color: Colors.grey,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
                 ),
-              );
-            }
-          },
-        ),
-      ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "₹ ${widget.model?.totalAmount}",
+                style: const TextStyle(
+                  color: Colors.grey,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Align(
+              alignment: Alignment.center,
+              child: Text(
+                "Order ID = ${widget.model?.orderId}",
+                style: const TextStyle(
+                  color: Colors.grey,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Align(
+                alignment: Alignment.center,
+                child: Text(
+                  "Order at = ${widget.model?.orderTime?.toString() ?? 'N/A'}",
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 16,
+                  ),
+                )),
+          ),
+          const Divider(
+            thickness: 1,
+            color: Colors.pinkAccent,
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          orderStatus == "ended"
+              ? Image.asset("images/delivered.png")
+              : Image.asset("images/state.png"),
+          const Divider(
+            thickness: 1,
+            color: Colors.pinkAccent,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 50),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Name : ${widget.model?.name}",
+                style: const TextStyle(
+                  color: Colors.grey,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 50),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Phone Number : ${widget.model?.phoneNumber}",
+                style: const TextStyle(
+                  color: Colors.grey,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 50),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Address : ${widget.model?.completeAddress}",
+                style: const TextStyle(
+                  color: Colors.grey,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          FloatingActionButton.extended(
+onPressed: () {
+  Navigator.pushReplacement(context,
+      MaterialPageRoute(builder: (c) => const OrdersScreen()));
+},
+
+            heroTag: "btn2",
+            icon: const Icon(
+              Icons.close,
+              color: Colors.black,
+            ),
+            label: const Text(
+              "Go Back to Order",
+              style: TextStyle(fontSize: 16, color: Colors.black),
+            ),
+            backgroundColor: Colors.white,
+          ),
+        ],
+      )),
     );
   }
 }

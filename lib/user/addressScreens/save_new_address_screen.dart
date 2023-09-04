@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shop_zone/api_key.dart';
 import 'package:shop_zone/user/addressScreens/text_field_address_widget.dart';
-import 'package:shop_zone/user/global/global.dart';
 import 'package:shop_zone/user/userPreferences/current_user.dart';
 
 
+// ignore: must_be_immutable
 class SaveNewAddressScreen extends StatefulWidget
 {
   String? sellerUID;
