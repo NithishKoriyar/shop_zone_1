@@ -17,7 +17,7 @@ class Orders {
   String? orderTime;
   int? itemQuantity;
   String? name;
-  int? phoneNumber;
+  String? phoneNumber;
   String? completeAddress;
 
   Orders({
@@ -75,12 +75,7 @@ class Orders {
       itemQuantity = parsedCounter;
     }
     name = json["name"];
-    if (json["phoneNumber"] is int) {
-      phoneNumber = json["phoneNumber"] as int?;
-    } else if (json["phoneNumber"] is String) {
-      int? parsedCounter = int.tryParse(json["phoneNumber"]);
-      phoneNumber = parsedCounter;
-    }
+    phoneNumber = json["phoneNumber"];
     completeAddress = json["completeAddress"];
   }
 }

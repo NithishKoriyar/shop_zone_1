@@ -57,4 +57,5 @@ class API {
   static const getItemsImage = "$hostConnectSeller/"; //get items
   static const deleteItems = "$hostConnectSeller/deleteItem.php"; //get items
   static const sellerOrdersView = "$hostConnectSeller/ordersView.php"; // ordersView
+  static const updateEarningStatus = "$hostConnectSeller/updateEarningStatus.php"; // ordersView
 }

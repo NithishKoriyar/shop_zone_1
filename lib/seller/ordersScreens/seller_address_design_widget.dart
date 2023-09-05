@@ -3,34 +3,23 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
+import 'package:shop_zone/api_key.dart';
 import 'package:shop_zone/seller/global/seller_global.dart';
-import '../models/seller_address.dart';
+import 'package:shop_zone/seller/models/orders.dart';
+import 'package:shop_zone/seller/sellerPreferences/current_seller.dart';
 import '../splashScreen/seller_my_splash_screen.dart';
 import 'package:http/http.dart' as http;
 
-
 // ignore: must_be_immutable
-class AddressDesign extends StatelessWidget
-{
-  Address? model;
-  String? orderStatus;
-  String? orderId;
-  String? sellerId;
-  String? orderByUser;
-  String? totalAmount;
+class AddressDesign extends StatelessWidget {
+  Orders? model;
 
   AddressDesign({
     this.model,
-    this.orderStatus,
-    this.orderId,
-    this.sellerId,
-    this.orderByUser,
-    this.totalAmount,
   });
 
-
-  sendNotificationToUser(userUID, orderID) async
-  {
+  sendNotificationToUser(userUID, orderID) async {
     // String userDeviceToken = "";
 
     // await FirebaseFirestore.instance
@@ -52,30 +41,26 @@ class AddressDesign extends StatelessWidget
     // );
   }
 
-  notificationFormat(userDeviceToken, orderID, sellerName)
-  {
-    Map<String, String> headerNotification =
-    {
+  notificationFormat(userDeviceToken, orderID, sellerName) {
+    Map<String, String> headerNotification = {
       'Content-Type': 'application/json',
       'Authorization': fcmServerToken,
     };
 
-    Map bodyNotification =
-    {
-      'body': "Dear user, your Parcel (# $orderID) has been shifted Successfully by seller $sellerName. \nPlease Check Now",
+    Map bodyNotification = {
+      'body':
+          "Dear user, your Parcel (# $orderID) has been shifted Successfully by seller $sellerName. \nPlease Check Now",
       'title': "Parcel Shifted",
     };
 
-    Map dataMap =
-    {
+    Map dataMap = {
       "click_action": "FLUTTER_NOTIFICATION_CLICK",
       "id": "1",
       "status": "done",
       "userOrderId": orderID,
     };
 
-    Map officialNotificationFormat =
-    {
+    Map officialNotificationFormat = {
       'notification': bodyNotification,
       'data': dataMap,
       'priority': 'high',
@@ -90,36 +75,27 @@ class AddressDesign extends StatelessWidget
   }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     return Column(
       children: [
-
         const Padding(
           padding: EdgeInsets.all(10.0),
           child: Text(
             'Shipping Details:',
-            style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold
-            ),
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
         ),
-
         const SizedBox(
           height: 6.0,
         ),
-
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 90, vertical: 5),
           width: MediaQuery.of(context).size.width,
           child: Table(
             children: [
-
               //name
               TableRow(
-                children:
-                [
+                children: [
                   const Text(
                     "Name",
                     style: TextStyle(color: Colors.white),
@@ -134,9 +110,8 @@ class AddressDesign extends StatelessWidget
               ),
 
               const TableRow(
-                children:
-                [
-                   SizedBox(
+                children: [
+                  SizedBox(
                     height: 4,
                   ),
                   SizedBox(
@@ -147,8 +122,7 @@ class AddressDesign extends StatelessWidget
 
               //phone
               TableRow(
-                children:
-                [
+                children: [
                   const Text(
                     "Phone Number",
                     style: TextStyle(color: Colors.white),
@@ -161,80 +135,68 @@ class AddressDesign extends StatelessWidget
                   ),
                 ],
               ),
-
             ],
           ),
         ),
-
         const SizedBox(
           height: 20,
         ),
-
         Padding(
           padding: const EdgeInsets.all(10.0),
           child: Text(
             model!.completeAddress.toString(),
             textAlign: TextAlign.justify,
             style: const TextStyle(
-                color: Colors.white,
+              color: Colors.white,
             ),
           ),
         ),
-
         GestureDetector(
-          onTap: ()
-          {
-            if(orderStatus == "normal")
-            {
-              //update earnings
-              FirebaseFirestore.instance
-                  .collection("sellers")
-                  .doc(sharedPreferences!.getString("uid"))
-                  .update(
-                  {
-                    "earnings": (double.parse(previousEarning)) + (double.parse(totalAmount!)),
-                  }).whenComplete(()
-              {
-                //change order status to shifted
-                FirebaseFirestore.instance
-                    .collection("orders")
-                    .doc(orderId)
-                    .update(
-                    {
-                      "status": "shifted",
-                    }).whenComplete(()
-                {
-                  FirebaseFirestore.instance
-                      .collection("users")
-                      .doc(orderByUser)
-                      .collection("orders")
-                      .doc(orderId)
-                      .update(
-                      {
-                        "status": "shifted",
-                      }).whenComplete(()
-                  {
-                    //send notification to user - order shifted
-                    sendNotificationToUser(orderByUser, orderId);
+          onTap: () async {
+            if (model?.orderStatus == "normal") {
+              // Replace with HTTP call to update earnings and order status
+              const String apiURL =API.updateEarningStatus;
 
-                    Fluttertoast.showToast(msg: "Confirmed Successfully.");
+              final Map<String, dynamic> data = {
+                'uid': model?.sellerUID,
+                'orderId': model?.orderId,
+                'totalAmount':model?.totalAmount, // Make sure orderId is set before this call
+              };
+            print("data ${data}");
 
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => SellerSplashScreen()));
-                  });
-                });
-              });
-            }
-            else if(orderStatus == "shifted")
-            {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => SellerSplashScreen()));
-            }
-            else if(orderStatus == "ended")
-            {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => SellerSplashScreen()));
-            }
-            else
-            {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => SellerSplashScreen()));
+              final response = await http.post(
+                Uri.parse(apiURL),
+                body: json.encode(data),
+                headers: {"Content-Type": "application/json"},
+              );
+
+              if (response.statusCode == 200) {
+                final Map<String, dynamic> responseBody =
+                    json.decode(response.body);
+
+                if (responseBody["status"] == "success") {
+                  //send notification to user - order shifted
+                  //sendNotificationToUser(orderByUser,orderId); // Make sure orderByUser and orderId are set before this call
+
+                  Fluttertoast.showToast(
+                      msg:
+                          responseBody["message"] ?? "Confirmed Successfully.");
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => SellerSplashScreen()));
+                } else {
+                  Fluttertoast.showToast(
+                      msg: responseBody["message"] ?? "Error updating data.");
+                }
+              } else {
+                Fluttertoast.showToast(msg: "Server error. Please try again.");
+              }
+            } else {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => SellerSplashScreen()));
             }
           },
           child: Padding(
@@ -242,27 +204,28 @@ class AddressDesign extends StatelessWidget
             child: Container(
               decoration: const BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [
-                      Colors.pinkAccent,
-                      Colors.purpleAccent,
-                    ],
-                    begin:  FractionalOffset(0.0, 0.0),
-                    end:  FractionalOffset(1.0, 0.0),
-                    stops: [0.0, 1.0],
-                    tileMode: TileMode.clamp,
-                  )
-              ),
+                colors: [
+                  Colors.pinkAccent,
+                  Colors.purpleAccent,
+                ],
+                begin: FractionalOffset(0.0, 0.0),
+                end: FractionalOffset(1.0, 0.0),
+                stops: [0.0, 1.0],
+                tileMode: TileMode.clamp,
+              )),
               width: MediaQuery.of(context).size.width - 40,
-              height: orderStatus == "ended" ? 60 : MediaQuery.of(context).size.height * .10,
+              height: model?.orderStatus == "ended"
+                  ? 60
+                  : MediaQuery.of(context).size.height * .10,
               child: Center(
                 child: Text(
-                  orderStatus == "ended"
+                  model?.orderStatus == "ended"
                       ? "Go Back"
-                      : orderStatus == "shifted"
-                      ? "Go Back"
-                      : orderStatus == "normal"
-                      ? "Parcel Packed & \nShifted to Nearest PickUp Point. \nClick to Confirm"
-                      : "",
+                      : model?.orderStatus == "shifted"
+                          ? "Go Back"
+                          : model?.orderStatus == "normal"
+                              ? "Parcel Packed & \nShifted to Nearest PickUp Point. \nClick to Confirm"
+                              : "",
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: Colors.white,
@@ -273,7 +236,6 @@ class AddressDesign extends StatelessWidget
             ),
           ),
         ),
-
       ],
     );
   }
