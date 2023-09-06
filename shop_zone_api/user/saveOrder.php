@@ -9,7 +9,7 @@ $data = json_decode(file_get_contents('php://input'), true);
 
 $response = [];
 
-$query = sprintf("INSERT INTO users_orders (addressID, totalAmount, orderBy, productIDs, paymentDetails, orderTime, orderId, isSuccess, sellerUID, status, itemQuantity, itemID) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+$query = sprintf("INSERT INTO users_orders (addressID, totalAmount, orderBy, productIDs, paymentDetails, orderTime, orderId, isSuccess, sellerUID, orderStatus, itemQuantity, itemID) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
     $connectNow->real_escape_string($data["addressID"]),
     $connectNow->real_escape_string($data["totalAmount"]),
     $connectNow->real_escape_string($data["orderBy"]),
@@ -34,5 +34,3 @@ if ($connectNow->query($query) === TRUE) {
 
 echo json_encode($response);
 $connectNow->close();
-
-?>

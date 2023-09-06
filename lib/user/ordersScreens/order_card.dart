@@ -6,11 +6,9 @@ import 'package:shop_zone/user/ordersScreens/order_details_screen.dart';
 // ignore: must_be_immutable
 class OrderCard extends StatefulWidget {
   Orders? model;
-  int? quantityNumber;
 
   OrderCard({
     this.model,
-    this.quantityNumber,
   });
  
   @override

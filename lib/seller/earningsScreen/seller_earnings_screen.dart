@@ -1,6 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:flutter/material.dart';
-
+import 'package:shop_zone/api_key.dart';
+import 'package:shop_zone/seller/sellerPreferences/current_seller.dart';
 import '../global/seller_global.dart';
 import '../splashScreen/seller_my_splash_screen.dart';
 
@@ -17,27 +20,52 @@ class _EarningsScreenState extends State<EarningsScreen>
 {
   String totalSellerEarnings = "";
 
-  readTotalEarnings() async
-  {
-    await FirebaseFirestore.instance
-        .collection("sellers")
-        .doc(sharedPreferences!.getString("uid"))
-        .get()
-        .then((snap)
-    {
+
+
+Future<void> readTotalEarnings() async {
+  final String uid = sellerID;
+  final response = await http.get(Uri.parse("${API.earnings}?uid=$uid"));
+
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    if (data['earnings'] != null) {
       setState(() {
-        totalSellerEarnings = snap.data()!["earnings"].toString();
+        totalSellerEarnings = data['earnings'].toString();
       });
+    } else {
+      print("Error fetching earnings: ${data['error']}");
+    }
+  } else {
+    print("Failed to load earnings with status code: ${response.statusCode}");
+  }
+}
+
+    //!seller information--------------------------------------
+  final CurrentSeller currentSellerController = Get.put(CurrentSeller());
+
+  late String sellerName;
+  late String sellerEmail;
+  late String sellerID;
+  late String sellerImg;
+
+  @override
+  void initState() {
+    super.initState();
+    currentSellerController.getSellerInfo().then((_) {
+      setSellerInfo();
+       readTotalEarnings();
+      // Once the seller info is set, call setState to trigger a rebuild.
+      setState(() {});
     });
   }
 
-  @override
-  void initState()
-  {
-    super.initState();
-
-    readTotalEarnings();
+  void setSellerInfo() {
+    sellerName = currentSellerController.seller.seller_name;
+    sellerEmail = currentSellerController.seller.seller_email;
+    sellerID = currentSellerController.seller.seller_id.toString();
+    sellerImg = currentSellerController.seller.seller_profile;
   }
+
 
   @override
   Widget build(BuildContext context)

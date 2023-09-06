@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:shop_zone/seller/splashScreen/seller_my_splash_screen.dart';
 import 'package:shop_zone/user/cart/cart_screen.dart';
+import 'package:shop_zone/user/history/history_screen.dart';
+import 'package:shop_zone/user/notYetReceivedParcels/not_yet_received_parcels_screen.dart';
 import 'package:shop_zone/user/ordersScreens/orders_screen.dart';
 import 'package:shop_zone/user/sellersScreens/home_screen.dart';
 import 'package:shop_zone/user/splashScreen/my_splash_screen.dart';
@@ -178,7 +180,7 @@ class _MyDrawerState extends State<MyDrawer> {
                     style: TextStyle(color: Colors.white),
                   ),
                   onTap: () {
-                    //Navigator.push(context, MaterialPageRoute(builder: (c)=> NotYetReceivedParcelsScreen()));
+                    Navigator.push(context, MaterialPageRoute(builder: (c)=> NotYetReceivedParcelsScreen()));
                   },
                 ),
                 const Divider(
@@ -198,7 +200,7 @@ class _MyDrawerState extends State<MyDrawer> {
                     style: TextStyle(color: Colors.white),
                   ),
                   onTap: () {
-                    //Navigator.push(context, MaterialPageRoute(builder: (c)=> HistoryScreen()));
+                    Navigator.push(context, MaterialPageRoute(builder: (c)=> HistoryScreen()));
                   },
                 ),
                 const Divider(

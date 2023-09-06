@@ -1,13 +1,19 @@
-
+import 'dart:convert';
+import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shop_zone/api_key.dart';
 import 'package:shop_zone/user/models/orders.dart';
+import 'package:shop_zone/user/ratingScreen/rate_seller_screen.dart';
 import 'package:shop_zone/user/splashScreen/my_splash_screen.dart';
 
 class AddressDesign extends StatelessWidget {
-      final Orders? model;
+  final Orders? model;
 
-    AddressDesign({this.model}); 
+  AddressDesign({
+    this.model,
+  });
 
   // sendNotificationToSeller() async {
   //   if (model?.sellerDeviceToken != null) {
@@ -55,6 +61,10 @@ class AddressDesign extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //! user details from current user
+    // final CurrentUser currentUserController = Get.find<CurrentUser>();
+    // final String userID = currentUserController.user.user_id.toString();
+
     return Column(
       children: [
         const Padding(
@@ -87,7 +97,8 @@ class AddressDesign extends StatelessWidget {
               ),
               TableRow(
                 children: [
-                  const Text("Phone Number", style: TextStyle(color: Colors.grey)),
+                  const Text("Phone Number",
+                      style: TextStyle(color: Colors.grey)),
                   Text(
                     model?.phoneNumber ?? "",
                     style: const TextStyle(color: Colors.grey),
@@ -107,19 +118,62 @@ class AddressDesign extends StatelessWidget {
           ),
         ),
         GestureDetector(
-          onTap: () {
+          onTap: () async {
             if (model?.orderStatus == "normal") {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => MySplashScreen()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => MySplashScreen()));
             } else if (model?.orderStatus == "shifted") {
               //! Shifted and normal status is not
               //sendNotificationToSeller();
+              const String apiURL = API.updateNotReceivedStatus;
+              final Map<String, dynamic> data = {
+                'orderId': model?.orderId,
+              };
+              print("data ${data}");
 
-              Fluttertoast.showToast(msg: "Confirmed Successfully.");
-              Navigator.push(context, MaterialPageRoute(builder: (context) => MySplashScreen()));
+              final response = await http.post(
+                Uri.parse(apiURL),
+                body: json.encode(data),
+                headers: {"Content-Type": "application/json"},
+              );
+
+              if (response.statusCode == 200) {
+                final Map<String, dynamic> responseBody =
+                    json.decode(response.body);
+
+                if (responseBody["status"] == "success") {
+                  //sendNotificationToSeller(sellerId, orderId); // Make sure orderByUser and orderId are set before this call
+
+                  Fluttertoast.showToast(
+                      msg:
+                          responseBody["message"] ?? "Confirmed Successfully.");
+                  // ignore: use_build_context_synchronously
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const MySplashScreen()));
+                } else {
+                  Fluttertoast.showToast(
+                      msg: responseBody["message"] ?? "Error updating data.");
+                }
+              } else {
+                Fluttertoast.showToast(msg: "Server error. Please try again.");
+              }
             } else if (model?.orderStatus == "ended") {
               // Rate the Seller feature
+                      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (c) => RateSellerScreen(
+              model: model,
+            ),
+          ),
+        );
             } else {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => MySplashScreen()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const MySplashScreen()));
             }
           },
           child: Padding(
@@ -138,7 +192,9 @@ class AddressDesign extends StatelessWidget {
                 ),
               ),
               width: MediaQuery.of(context).size.width - 40,
-              height: model?.orderStatus == "ended" ? 60 : MediaQuery.of(context).size.height * .10,
+              height: model?.orderStatus == "ended"
+                  ? 60
+                  : MediaQuery.of(context).size.height * .10,
               child: Center(
                 child: Text(
                   getModelStatusText(),

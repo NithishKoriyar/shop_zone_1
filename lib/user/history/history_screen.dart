@@ -1,21 +1,24 @@
 import 'dart:convert';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart'as http;
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:shop_zone/api_key.dart';
 import 'package:shop_zone/user/models/orders.dart';
-import 'package:shop_zone/user/ordersScreens/order_card.dart';
 import 'package:shop_zone/user/userPreferences/current_user.dart';
-import '../../api_key.dart';
+import '../ordersScreens/order_card.dart';
 
-class OrdersScreen extends StatefulWidget {
-  const OrdersScreen({Key? key}) : super(key: key);
 
+
+class HistoryScreen extends StatefulWidget
+{
   @override
-  State<OrdersScreen> createState() => _OrdersScreenState();
+  State<HistoryScreen> createState() => _HistoryScreenState();
 }
 
-class _OrdersScreenState extends State<OrdersScreen> {
+
+
+class _HistoryScreenState extends State<HistoryScreen> {
+
   List<int>? itemQuantityList;
   final CurrentUser currentUserController = Get.put(CurrentUser());
 
@@ -53,9 +56,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
   List<dynamic> items = [];
   bool isLoading = true;
 
-  Stream<List<dynamic>> fetchOrders() async* {
+  Stream<List<dynamic>> fetchNotReceived() async* {
     // Assuming your API endpoint is something like this
-    const String apiUrl = API.ordersView;
+    const String apiUrl = API.parcelsHistory;
 
     try {
       final response =
@@ -91,19 +94,19 @@ class _OrdersScreenState extends State<OrdersScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Orders"),
+        title: const Text("Parcels History"),
         backgroundColor: Colors.black,
         centerTitle: true,
       ),
       body: StreamBuilder<List<dynamic>>(
-        stream: fetchOrders(),
+        stream: fetchNotReceived(),
         builder: (context, dataSnapshot) {
           if (dataSnapshot.connectionState == ConnectionState.waiting) {
             return const Center(
                 child: CircularProgressIndicator()); // Show loading indicator
           } else if (!dataSnapshot.hasData || dataSnapshot.data!.isEmpty) {
             return const Center(
-                child: Text('No Orders')); // Show loading indicator
+                child: Text('No Parcels History')); // Show loading indicator
           } else {
             List<dynamic> orderItems = dataSnapshot.data!;
             return ListView.builder(

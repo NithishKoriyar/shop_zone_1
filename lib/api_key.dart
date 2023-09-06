@@ -28,8 +28,17 @@ class API {
       "$hostConnectUser/getUserOrders.php"; // get User Orders
   static const getOrderItems =
       "$hostConnectUser/getOrderItems.php"; // get Order Items
-       static const ordersView = "$hostConnectUser/ordersView.php"; // ordersView
-
+  static const ordersView = "$hostConnectUser/ordersView.php"; // ordersView
+  static const notYetReceivedParcelsScreen =
+      "$hostConnectUser/notYetReceivedParcelsScreen.php"; // notYetReceivedParcelsScreen
+  static const updateNotReceivedStatus =
+      "$hostConnectUser/updateNotReceivedStatus.php"; // update Not Received Status to ended
+  static const parcelsHistory =
+      "$hostConnectUser/ParcelsHistory.php"; // parcels History
+  static const getSellerRating =
+      "$hostConnectUser/getSellerRating.php"; //get Seller Rating
+  static const updateSellerRating =
+      "$hostConnectUser/updateSellerRating.php"; // update Seller Rating
   //!------------------------------SELLERS API CONNECTIONS --------------------------------
 
 //C:\001-work\amazon clone in backend php\shop_zone\shop_zone_api\seller\Brands.php
@@ -56,6 +65,9 @@ class API {
   static const getItems = "$hostConnectSeller/getItems.php"; //get items
   static const getItemsImage = "$hostConnectSeller/"; //get items
   static const deleteItems = "$hostConnectSeller/deleteItem.php"; //get items
-  static const sellerOrdersView = "$hostConnectSeller/ordersView.php"; // ordersView
-  static const updateEarningStatus = "$hostConnectSeller/updateEarningStatus.php"; // ordersView
+  static const sellerOrdersView =
+      "$hostConnectSeller/ordersView.php"; // ordersView
+  static const updateEarningStatus =
+      "$hostConnectSeller/updateEarningStatus.php"; // update Earning & Status
+  static const earnings = "$hostConnectSeller/earnings.php"; // earnings
 }

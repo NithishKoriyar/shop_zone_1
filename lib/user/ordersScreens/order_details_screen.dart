@@ -75,7 +75,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                     thickness: 1,
                     color: Colors.pinkAccent,
                   ),
-                 AddressDesign(model: widget.model)
+                 AddressDesign(
+                  model: widget.model,
+                 )
 
 
                 ],

@@ -1,13 +1,9 @@
 import 'dart:convert';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:get/get.dart';
 import 'package:shop_zone/api_key.dart';
 import 'package:shop_zone/seller/global/seller_global.dart';
 import 'package:shop_zone/seller/models/orders.dart';
-import 'package:shop_zone/seller/sellerPreferences/current_seller.dart';
 import '../splashScreen/seller_my_splash_screen.dart';
 import 'package:http/http.dart' as http;
 

@@ -14,19 +14,19 @@ $totalAmount = $connectNow->real_escape_string($data->totalAmount);
 $orderId = $connectNow->real_escape_string($data->orderId);
 
 // Fetch previousEarning from database
-$result = $connectNow->query("SELECT earnings FROM sellers WHERE uid = '$uid'");
+$result = $connectNow->query("SELECT earnings FROM sellers_table WHERE seller_id = '$uid'");
 $previousEarningRow = $result->fetch_assoc();
 $previousEarning = $previousEarningRow['earnings'];
 
 $newEarning = $previousEarning + $totalAmount;
 
 // Update earnings
-$connectNow->query("UPDATE sellers SET earnings = '$newEarning' WHERE uid = '$uid'");
+$connectNow->query("UPDATE sellers_table SET earnings = '$newEarning' WHERE seller_id = '$uid'");
 
 // Update order status to shifted
-$connectNow->query("UPDATE orders SET status = 'shifted' WHERE orderId = '$orderId'");
+$connectNow->query("UPDATE users_orders SET orderStatus = 'shifted' WHERE orderId = '$orderId'");
 
-echo json_encode(["status" => "success", "message" => "Updated successfully"]);
+echo json_encode(["status" => "success", "message" => "shifted successfully"]);
 
 $connectNow->close();
 ?>
