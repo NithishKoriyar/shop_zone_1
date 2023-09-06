@@ -121,7 +121,7 @@ class _RateSellerScreenState extends State<RateSellerScreen> {
 
                   final data = jsonDecode(response.body);
 
-                  if (data['ratings'] == null) {
+                  if (data['rating'] == null) {
                     await http.post(
                         //!updateSellerRating
                         Uri.parse(API.updateSellerRating),
@@ -131,7 +131,7 @@ class _RateSellerScreenState extends State<RateSellerScreen> {
                         });
                   } else {
                     double pastRatings =
-                        double.parse(data['ratings'].toString());
+                        double.parse(data['rating'].toString());
                     double newRatings = (pastRatings + countStarsRating) / 2;
 
                     await http.post(

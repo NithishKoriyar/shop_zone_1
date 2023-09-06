@@ -6,7 +6,7 @@ class Sellers {
   final String sellerProfile;
   final int sellerPhone;
   final String sellerAddress;
-  final int rating;
+  final double rating;
 
   Sellers({
     required this.sellerId,
@@ -29,7 +29,9 @@ class Sellers {
       sellerProfile: json['seller_profile'] ?? '',
       sellerPhone: json['seller_phone'] ?? 0,
       sellerAddress: json['seller_address'] ?? '',
-      rating: json['rating'] ?? 0,
+      rating: (json['rating'] is int || json['rating'] is double) ? json['rating'].toDouble() : 0.0,
+
+
     );
   }
 
