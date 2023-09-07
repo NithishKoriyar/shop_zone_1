@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shop_zone/seller/brandsScreens/seller_home_screen.dart';
 import 'package:shop_zone/seller/earningsScreen/seller_earnings_screen.dart';
+import 'package:shop_zone/seller/historyScreen/seller_history_screen.dart';
 import 'package:shop_zone/seller/ordersScreens/seller_orders_screen.dart';
 import 'package:shop_zone/seller/sellerPreferences/current_seller.dart';
 import 'package:shop_zone/seller/sellerPreferences/seller_preferences.dart';
+import 'package:shop_zone/seller/shiftedParcelsScreen/seller_shifted_parcels_screen.dart';
 import 'package:shop_zone/user/splashScreen/my_splash_screen.dart';
 import '../../api_key.dart';
 import '../splashScreen/seller_my_splash_screen.dart';
@@ -173,7 +175,7 @@ class _MyDrawerState extends State<MyDrawer>
                   ),
                   onTap: ()
                   {
-                    //Navigator.push(context, MaterialPageRoute(builder: (c)=> ShiftedParcelsScreen()));
+                    Navigator.push(context, MaterialPageRoute(builder: (c)=> ShiftedParcelsScreen()));
                   },
                 ),
                 const Divider(
@@ -191,7 +193,7 @@ class _MyDrawerState extends State<MyDrawer>
                   ),
                   onTap: ()
                   {
-                    //Navigator.push(context, MaterialPageRoute(builder: (c)=> HistoryScreen()));
+                    Navigator.push(context, MaterialPageRoute(builder: (c)=> HistoryScreen()));
                   },
                 ),
                 const Divider(

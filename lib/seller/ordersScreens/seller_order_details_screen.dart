@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:shop_zone/seller/models/orders.dart';
 import 'package:shop_zone/seller/ordersScreens/seller_address_design_widget.dart';
-import 'package:shop_zone/seller/sellerPreferences/current_seller.dart';
 
 // ignore: must_be_immutable
 class OrderDetailsScreen extends StatefulWidget {
@@ -25,10 +23,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // StatusBanner(
-            //   status: widget.model.isSuccess,
-            //   orderStatus: widget.model.status,
-            // ),
+            const SizedBox(height: 30,),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Align(

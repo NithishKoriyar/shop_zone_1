@@ -39,27 +39,30 @@ class API {
       "$hostConnectUser/getSellerRating.php"; //get Seller Rating
   static const updateSellerRating =
       "$hostConnectUser/updateSellerRating.php"; // update Seller Rating
-        static const searchStores =
+  static const searchStores =
       "$hostConnectUser/searchStores.php"; // update Seller Rating
+      
+//?----------------------------------------------------------------
+
+
   //!------------------------------SELLERS API CONNECTIONS --------------------------------
 
 //C:\001-work\amazon clone in backend php\shop_zone\shop_zone_api\seller\Brands.php
   //seller api
   static const hostConnectSeller = "$hostConnect/seller";
-
-  //! fetch the seller name
-  static const sellerNameBrand = "$inSideUser/fetchSeller.php";
-  // seller api
-  static const validateSellerEmail = "$hostConnectSeller/validation_email.php";
-  static const registerSeller = "$hostConnectSeller/register.php";
+  //!
+  static const sellerNameBrand =
+      "$inSideUser/fetchSeller.php"; // fetch the seller name
+  static const validateSellerEmail =
+      "$hostConnectSeller/validation_email.php"; //validateSellerEmail
+  static const registerSeller =
+      "$hostConnectSeller/register.php"; //registerSeller
   static const profileImageSeller = "$hostConnectSeller/uploadImage.php";
   static const loginSeller = "$hostConnectSeller/login.php";
   static const sellerImage = "$hostConnectSeller/";
   static const saveBrandInfo = "$hostConnectSeller/saveBrandInfo.php";
-
   static const currentSellerBrandView =
       "$hostConnectSeller/Brands.php"; //seller home page Brand view information
-
   static const brandImage = "$hostConnectSeller/"; //Brand image
   static const deleteBrand =
       "$hostConnectSeller/deleteBrand.php"; //delete Brand
@@ -72,4 +75,8 @@ class API {
   static const updateEarningStatus =
       "$hostConnectSeller/updateEarningStatus.php"; // update Earning & Status
   static const earnings = "$hostConnectSeller/earnings.php"; // earnings
+  static const shiftedOrdersView =
+      "$hostConnectSeller/shiftedOrdersView.php"; // shifted Orders View
+  static const endedOrdersView =
+      "$hostConnectSeller/endedOrdersView.php"; // ended Orders View
 }
