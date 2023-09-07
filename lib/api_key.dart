@@ -39,6 +39,8 @@ class API {
       "$hostConnectUser/getSellerRating.php"; //get Seller Rating
   static const updateSellerRating =
       "$hostConnectUser/updateSellerRating.php"; // update Seller Rating
+        static const searchStores =
+      "$hostConnectUser/searchStores.php"; // update Seller Rating
   //!------------------------------SELLERS API CONNECTIONS --------------------------------
 
 //C:\001-work\amazon clone in backend php\shop_zone\shop_zone_api\seller\Brands.php

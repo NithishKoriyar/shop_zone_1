@@ -6,6 +6,7 @@ import 'package:shop_zone/user/cart/cart_screen.dart';
 import 'package:shop_zone/user/history/history_screen.dart';
 import 'package:shop_zone/user/notYetReceivedParcels/not_yet_received_parcels_screen.dart';
 import 'package:shop_zone/user/ordersScreens/orders_screen.dart';
+import 'package:shop_zone/user/searchScreen/search_screen.dart';
 import 'package:shop_zone/user/sellersScreens/home_screen.dart';
 import 'package:shop_zone/user/splashScreen/my_splash_screen.dart';
 import 'package:shop_zone/user/userPreferences/current_user.dart';
@@ -220,7 +221,7 @@ class _MyDrawerState extends State<MyDrawer> {
                     style: TextStyle(color: Colors.white),
                   ),
                   onTap: () {
-                    //Navigator.push(context, MaterialPageRoute(builder: (c)=> SearchScreen()));
+                   Navigator.push(context, MaterialPageRoute(builder: (c)=> SearchScreen()));
                   },
                 ),
                 const Divider(

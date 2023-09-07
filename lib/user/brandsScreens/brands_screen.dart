@@ -14,8 +14,9 @@ import 'brands_ui_design_widget.dart';
 class BrandsScreen extends StatefulWidget {
   final Sellers? model;
 
-  BrandsScreen({this.model,});
-
+  BrandsScreen({
+    this.model,
+  });
 
   @override
   State<BrandsScreen> createState() => _BrandsScreenState();
@@ -25,12 +26,12 @@ class _BrandsScreenState extends State<BrandsScreen> {
 
   Future<List<dynamic>> fetchBrands(String sellerId) async {
     Uri uri = Uri.parse('${API.sellerBrandView}?sellerId=$sellerId');
+    print("Fetching brands from: $uri");
 
     // Print the link in the terminal
     // print("Fetching brands from: $uri");
 
     final response = await http.get(uri);
-
 
     if (response.statusCode == 200) {
       var responseBody = json.decode(response.body);
@@ -44,18 +45,21 @@ class _BrandsScreenState extends State<BrandsScreen> {
     } else {
       throw Exception('Failed to load brands');
     }
-    return [];  // Return an empty list if all else fails
+    return []; // Return an empty list if all else fails
   }
 
-
-  Stream<List<dynamic>> brandsStream(String sellerId) async* {
-    while (true) {
-      await Future.delayed(Duration(seconds: 2)); // Polling every 5 seconds
-      final brands = await fetchBrands(sellerId);
-      yield brands;
-    }
+Stream<List<dynamic>> brandsStream(String? sellerId) async* {
+  if (sellerId == null || sellerId.isEmpty) {
+    yield [];  // Return an empty list if sellerId is null or empty.
+    return;    // Exit the function early.
   }
 
+  while (true) {
+    await Future.delayed(const Duration(seconds: 2));
+    final brands = await fetchBrands(sellerId);
+    yield brands;
+  }
+}
 
 
   @override
@@ -91,19 +95,21 @@ class _BrandsScreenState extends State<BrandsScreen> {
             ),
           ),
           StreamBuilder<List<dynamic>>(
-            stream: brandsStream(widget.model!.sellerId.toString()),
+         stream: brandsStream(widget.model!.sellerId?.toString()),
+
+
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return SliverToBoxAdapter(
+                return const SliverToBoxAdapter(
                   child: Center(child: CircularProgressIndicator()),
                 );
               } else if (snapshot.hasError) {
                 print(snapshot.error); // Log the error
-                return SliverToBoxAdapter(
+                return const SliverToBoxAdapter(
                   child: Center(child: Text("Error fetching brands")),
                 );
               } else if (snapshot.data == null || snapshot.data!.isEmpty) {
-                return SliverToBoxAdapter(
+                return const SliverToBoxAdapter(
                   child: Center(child: Text("No brands exist")),
                 );
               } else {
