@@ -1,40 +1,21 @@
-<?php
-//Display errors for debugging purposes (REMOVE THIS IN PRODUCTION)
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
 
+<?php
+header('Content-Type: application/json');
 include '../db_config.php';
 
-if(!isset($_GET['sellerId']) || empty($_GET['sellerId'])) {
-    header('Content-Type: application/json');
-    echo json_encode(['error' => 'Invalid sellerId provided.']);
-    exit;
-}
+$uid = $_GET['uid']; // you'll need to pass the UID as a parameter to your API
 
-$sellerId = $_GET['sellerId'];
+$query = "SELECT * FROM brands WHERE sellerUID = '$uid' ORDER BY publishedDate DESC";
 
-// Directly embedding variables into SQL is NOT SAFE. This is for demonstration purposes only.
-$sql = "SELECT * FROM brands WHERE sellerUID = '$sellerId' ORDER BY publishedDate DESC";
-
-if(!$result = $connectNow->query($sql)) {
-    header('Content-Type: application/json');
-    // echo json_encode(['error' => '.$sellerID.Query execution failed.']);
-
-$error_message = 'Seller ID: '.$sellerId.'. Query execution failed.';
-echo json_encode(['error' => $error_message]);
-    exit;
-}
-
-$brands = [];
+$result = $connectNow->query($query);
+$data = [];
 
 while($row = $result->fetch_assoc()) {
-    $brands[] = $row;
+    $data[] = $row;
 }
 
-header('Content-Type: application/json');
-echo json_encode($brands);
+echo json_encode($data);
 
 $connectNow->close();
-
-
+?>
 

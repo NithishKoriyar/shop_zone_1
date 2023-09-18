@@ -22,6 +22,8 @@ class _SellersUIDesignWidgetState extends State<SellersUIDesignWidget> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+         print("Rating...");
+        print(widget.model!.rating);
         //send user to a seller's brands screen
         Navigator.push(context, MaterialPageRoute(builder: (c)=> BrandsScreen(
           model: widget.model,
@@ -59,7 +61,6 @@ class _SellersUIDesignWidgetState extends State<SellersUIDesignWidget> {
                   ),
                 ),
                 SmoothStarRating(
-                  // ignore: unnecessary_null_comparison
                   rating: widget.model!.rating == null
                       ? 0.0
                       : double.parse(widget.model!.rating.toString()),

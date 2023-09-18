@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:shop_zone/api_key.dart';
+import 'package:shop_zone/seller/models/seller.dart';
 import 'package:shop_zone/user/models/brands.dart';
 import 'package:shop_zone/user/models/sellers.dart';
 import 'package:shop_zone/user/widgets/my_drawer.dart';
@@ -24,43 +25,22 @@ class BrandsScreen extends StatefulWidget {
 
 class _BrandsScreenState extends State<BrandsScreen> {
 
-  Future<List<dynamic>> fetchBrands(String sellerId) async {
-    Uri uri = Uri.parse('${API.sellerBrandView}?sellerId=$sellerId');
-    print("Fetching brands from: $uri");
 
-    // Print the link in the terminal
-    // print("Fetching brands from: $uri");
-
-    final response = await http.get(uri);
-
-    if (response.statusCode == 200) {
-      var responseBody = json.decode(response.body);
-
-      if (responseBody is List) {
-        return responseBody;
-      } else if (responseBody.containsKey('error')) {
-        // Handle custom error messages from the server
-        throw Exception(responseBody['error']);
-      }
-    } else {
-      throw Exception('Failed to load brands');
-    }
-    return []; // Return an empty list if all else fails
-  }
-
-Stream<List<dynamic>> brandsStream(String? sellerId) async* {
-  if (sellerId == null || sellerId.isEmpty) {
-    yield [];  // Return an empty list if sellerId is null or empty.
-    return;    // Exit the function early.
-  }
-
-  while (true) {
-    await Future.delayed(const Duration(seconds: 2));
-    final brands = await fetchBrands(sellerId);
-    yield brands;
+Stream<List<Brands>> _getBrands(String uid) async* {
+  print('---------------  ${widget.model}');
+  
+  final response = await http.get(Uri.parse('${API.sellerBrandView}?uid=$uid'));
+  print("response.body");
+  print('${API.sellerBrandView}?uid=$uid');
+  if (response.statusCode == 200) {
+     print(response.body);
+    List<dynamic> data = json.decode(response.body);
+   
+    yield data.map((brandData) => Brands.fromJson(brandData)).toList();
+  } else {
+    throw Exception('Failed to load brands');
   }
 }
-
 
   @override
   Widget build(BuildContext context) {
@@ -94,40 +74,33 @@ Stream<List<dynamic>> brandsStream(String? sellerId) async* {
               title: '${widget.model!.sellerName} - Brands',
             ),
           ),
-          StreamBuilder<List<dynamic>>(
-         stream: brandsStream(widget.model!.sellerId?.toString()),
-
-
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const SliverToBoxAdapter(
-                  child: Center(child: CircularProgressIndicator()),
-                );
-              } else if (snapshot.hasError) {
-                print(snapshot.error); // Log the error
-                return const SliverToBoxAdapter(
-                  child: Center(child: Text("Error fetching brands")),
-                );
-              } else if (snapshot.data == null || snapshot.data!.isEmpty) {
-                return const SliverToBoxAdapter(
-                  child: Center(child: Text("No brands exist")),
-                );
-              } else {
-                var brands = snapshot.data;
+          StreamBuilder(
+            stream: _getBrands(widget.model!.sellerId.toString()),
+            builder: (context, AsyncSnapshot<List<Brands>> dataSnapshot) {
+              if (dataSnapshot.hasData && dataSnapshot.data!.isNotEmpty) {
                 return SliverStaggeredGrid.countBuilder(
                   crossAxisCount: 1,
                   staggeredTileBuilder: (c) => const StaggeredTile.fit(1),
                   itemBuilder: (context, index) {
-                    Brands brandsModel = Brands.fromJson(brands[index]);
+                    Brands brandsModel = dataSnapshot.data![index];
+
                     return BrandsUiDesignWidget(
                       model: brandsModel,
                     );
                   },
-                  itemCount: brands!.length,
+                  itemCount: dataSnapshot.data!.length,
+                );
+              } else {
+                return const SliverToBoxAdapter(
+                  child: Center(
+                    child: Text(
+                      "No brands exists",
+                    ),
+                  ),
                 );
               }
             },
-          ),
+          )
         ],
       ),
     );

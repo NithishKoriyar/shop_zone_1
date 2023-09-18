@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:shop_zone/api_key.dart';
 import 'package:shop_zone/seller/splashScreen/seller_my_splash_screen.dart';
 import 'package:shop_zone/user/models/user.dart';
@@ -34,40 +35,46 @@ class _RegistrationTabPageState extends State<RegistrationTabPage> {
 
   final ImagePicker _picker = ImagePicker();
 
-  String usersImageUrl = "";
+String usersImageUrl = "";
 
-  // The ImagePicker
-  Future<void> _getImage() async {
-    imageXFile = await _picker.pickImage(source: ImageSource.gallery);
-    setState(() {
-      imageXFile;
-      imagename = imageXFile?.path.split('/').last;
-      imagepath = File(imageXFile!.path);
-      imagedata = base64Encode(imagepath!.readAsBytesSync());
-      // print("hello:" + imagedata.toString());
-    });
-  }
+// The ImagePicker
+Future<void> _getImage() async {
+  imageXFile = await _picker.pickImage(source: ImageSource.gallery);
+  setState(() {
+    imageXFile;
+    String? originalName = imageXFile?.path.split('/').last.split('.').first; 
+    String? extension = imageXFile?.path.split('.').last;
+    
+    // Get the current date and time and format it
+    String formattedDateTime = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
+    
+    // Combine the original name with the formatted date and time
+    imagename = "${originalName}_$formattedDateTime.$extension";
 
-  //this function is send the image to the php code and it will upload to a folder with unique name
-  Future<void> uploadImage() async {
-    try {
-      var res = await http.post(
-        Uri.parse(API.profileImage),
-        body: {"data": imagedata, "name": imagename},
-      );
-      var response = jsonDecode(res.body);
+    imagepath = File(imageXFile!.path);
+    imagedata = base64Encode(imagepath!.readAsBytesSync());
+  });
+}
 
-      if (response["success"] == true) {
-        //see if is sending response
-        //print("Uploaded Image Path: ${response["path"]}");
-        usersImageUrl = response["path"]; // Update the sellerImageUrl variable
-      } else {
-        print("Something went wrong");
-      }
-    } catch (e) {
-      print(e);
+//this function sends the image to the PHP code and it will upload to a folder with a unique name
+Future<void> uploadImage() async {
+  try {
+    var res = await http.post(
+      Uri.parse(API.profileImage),
+      body: {"data": imagedata, "name": imagename},
+    );
+    var response = jsonDecode(res.body);
+
+    if (response["success"] == true) {
+      usersImageUrl = response["path"]; // Update the sellerImageUrl variable
+    } else {
+      print("Something went wrong");
     }
+  } catch (e) {
+    print(e);
   }
+}
+
 
   //this function is get current location
   //the form validation
@@ -203,7 +210,7 @@ class _RegistrationTabPageState extends State<RegistrationTabPage> {
                     ? Icon(
                         Icons.add_photo_alternate,
                         size: MediaQuery.of(context).size.width * 0.20,
-                        color: Colors.white,
+                        color: Colors.black,
                       )
                     : null,
               ),

@@ -1,6 +1,8 @@
 class API {
-  static const hostConnect =
-      "http://192.168.13.120/Amazon%20Clone/shop_zone/shop_zone_api/";
+  //! local host
+  static const hostConnect ="http://192.168.0.102/Amazon%20Clone/shop_zone/shop_zone_api/";
+  //! web server
+ //static const hostConnect = "http://nithish.tech/shop_zone_api/";
   //!------------------------------USER API CONNECTIONS --------------------------------
 
   static const hostConnectUser = "$hostConnect/user";
@@ -10,8 +12,8 @@ class API {
   static const profileImage = "$hostConnectUser/uploadImage.php";
   static const login = "$hostConnectUser/login.php";
   static const userImage = "$hostConnectUser/";
-  //! folder in Side User  sellerBrand
-  static const inSideUser = "$hostConnectUser/sellerBrand/";
+  static const sellerNameBrand =
+      "$hostConnectUser/fetchSeller.php"; // fetch the seller name
   static const sellerBrandView =
       "$hostConnectUser/sellerBrandView.php"; //get seller Brand
   static const userSellerBrandItemView =
@@ -41,9 +43,8 @@ class API {
       "$hostConnectUser/updateSellerRating.php"; // update Seller Rating
   static const searchStores =
       "$hostConnectUser/searchStores.php"; // update Seller Rating
-      
-//?----------------------------------------------------------------
 
+//?----------------------------------------------------------------
 
   //!------------------------------SELLERS API CONNECTIONS --------------------------------
 
@@ -51,8 +52,7 @@ class API {
   //seller api
   static const hostConnectSeller = "$hostConnect/seller";
   //!
-  static const sellerNameBrand =
-      "$inSideUser/fetchSeller.php"; // fetch the seller name
+
   static const validateSellerEmail =
       "$hostConnectSeller/validation_email.php"; //validateSellerEmail
   static const registerSeller =

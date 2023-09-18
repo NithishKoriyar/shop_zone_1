@@ -90,7 +90,7 @@ class _SearchScreenState extends State<SearchScreen> {
               child: Text("Error: ${snapshot.error}"),
             );
           } else {
-            return Center(
+            return const Center(
               child: Text("No record found."),
             );
           }

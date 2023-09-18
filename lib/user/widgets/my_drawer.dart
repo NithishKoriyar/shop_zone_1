@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:shop_zone/seller/splashScreen/seller_my_splash_screen.dart';
 import 'package:shop_zone/user/cart/cart_screen.dart';
 import 'package:shop_zone/user/history/history_screen.dart';
@@ -71,7 +70,15 @@ class _MyDrawerState extends State<MyDrawer> {
                   height: 130,
                   width: 130,
                   child: CircleAvatar(
-                      backgroundImage: NetworkImage(API.userImage + userImg)),
+                    // ignore: unnecessary_null_comparison
+                    backgroundImage: userImg != null
+                        ? NetworkImage(API.userImage + userImg)
+                        : null, // check if userImg is initialized
+                    // ignore: unnecessary_null_comparison
+                    child: userImg == null
+                        ? const Icon(Icons.account_circle, size: 50)
+                        : null, // show a placeholder if userImg is null
+                  ),
                 ),
 
                 const SizedBox(
@@ -181,7 +188,10 @@ class _MyDrawerState extends State<MyDrawer> {
                     style: TextStyle(color: Colors.white),
                   ),
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (c)=> NotYetReceivedParcelsScreen()));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (c) => NotYetReceivedParcelsScreen()));
                   },
                 ),
                 const Divider(
@@ -201,7 +211,8 @@ class _MyDrawerState extends State<MyDrawer> {
                     style: TextStyle(color: Colors.white),
                   ),
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (c)=> HistoryScreen()));
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (c) => HistoryScreen()));
                   },
                 ),
                 const Divider(
@@ -221,7 +232,8 @@ class _MyDrawerState extends State<MyDrawer> {
                     style: TextStyle(color: Colors.white),
                   ),
                   onTap: () {
-                   Navigator.push(context, MaterialPageRoute(builder: (c)=> SearchScreen()));
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (c) => SearchScreen()));
                   },
                 ),
                 const Divider(

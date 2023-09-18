@@ -13,17 +13,18 @@ import 'package:http/http.dart' as http;
 
 class UploadBrandsScreen extends StatefulWidget {
   @override
-  State<UploadBrandsScreen> createState() => _UploadBrandsScreenState();
+  _UploadBrandsScreenState createState() => _UploadBrandsScreenState();
 }
 
 class _UploadBrandsScreenState extends State<UploadBrandsScreen> {
-  //!seller information--------------------------------------
   final CurrentSeller currentSellerController = Get.put(CurrentSeller());
-
-  late String sellerName;
-  late String sellerEmail;
-  late String sellerID;
-  
+  late String sellerName, sellerEmail, sellerID;
+  XFile? imgXFile;
+  final ImagePicker imagePicker = ImagePicker();
+  TextEditingController brandInfoTextEditingController = TextEditingController();
+  TextEditingController brandTitleTextEditingController = TextEditingController();
+  bool uploading = false;
+  String brandID = DateTime.now().millisecondsSinceEpoch.toString();
 
   @override
   void initState() {
@@ -45,21 +46,8 @@ class _UploadBrandsScreenState extends State<UploadBrandsScreen> {
     print('Seller Email: $sellerEmail');
     print('Seller Email: $sellerID');
   }
-  //!seller information--------------------------------------
-
-  XFile? imgXFile;
-  final ImagePicker imagePicker = ImagePicker();
-
-  TextEditingController brandInfoTextEditingController =
-      TextEditingController();
-  TextEditingController brandTitleTextEditingController =
-      TextEditingController();
-
-  bool uploading = false;
-  String brandID = DateTime.now().millisecondsSinceEpoch.toString();
 
   validateUploadForm() async {
-    //!--------------------------------------
     if (imgXFile != null) {
       if (brandInfoTextEditingController.text.isNotEmpty &&
           brandTitleTextEditingController.text.isNotEmpty) {
@@ -67,37 +55,37 @@ class _UploadBrandsScreenState extends State<UploadBrandsScreen> {
           uploading = true;
         });
 
-        // Prepare data for HTTP POST request
-        var request =
-        http.MultipartRequest('POST', Uri.parse(API.saveBrandInfo));
-
-        request.files.add(
-            await http.MultipartFile.fromPath('thumbnailUrl', imgXFile!.path));
-        request.fields['brandInfo'] =
-            brandInfoTextEditingController.text.trim();
-        request.fields['brandTitle'] =
-            brandTitleTextEditingController.text.trim();
+        var request = http.MultipartRequest('POST', Uri.parse(API.saveBrandInfo));
+        request.files.add(await http.MultipartFile.fromPath('thumbnailUrl', imgXFile!.path));
+        request.fields['brandInfo'] = brandInfoTextEditingController.text.trim();
+        request.fields['brandTitle'] = brandTitleTextEditingController.text.trim();
         request.fields['brandID'] = brandID;
         request.fields['sellerUID'] = sellerID;
 
-        // Send HTTP request
+        print("URL: ${API.saveBrandInfo}");
+
         var response = await request.send();
         var responseBody = await response.stream.bytesToString();
 
-        var jsonResponse = jsonDecode(responseBody);
-
-        // Handle the response based on the JSON returned from server
-        if (jsonResponse['status'] == 'success') {
-          // Success - Navigate or handle response
-          setState(() {
-            uploading = false;
-            brandID = DateTime.now().millisecondsSinceEpoch.toString();
-          });
-          Navigator.push(
-              context, MaterialPageRoute(builder: (c) => HomeScreen()));
+        if (response.statusCode == 200) {
+          try {
+            var jsonResponse = jsonDecode(responseBody);
+            if (jsonResponse['status'] == 'success') {
+              setState(() {
+                uploading = false;
+                brandID = DateTime.now().millisecondsSinceEpoch.toString();
+              });
+              Navigator.push(context, MaterialPageRoute(builder: (c) => HomeScreen()));
+            } else {
+              Fluttertoast.showToast(msg: jsonResponse['message']);
+            }
+          } catch (e) {
+            Fluttertoast.showToast(msg: 'Error parsing response: $e');
+          }
         } else {
-          Fluttertoast.showToast(msg: jsonResponse['message']);
+          Fluttertoast.showToast(msg: 'Server responded with code: ${response.statusCode}');
         }
+
       } else {
         Fluttertoast.showToast(msg: "Please write brand info and brand title.");
       }
@@ -107,137 +95,12 @@ class _UploadBrandsScreenState extends State<UploadBrandsScreen> {
   }
 
 
-  uploadFormScreen() {
-    //!---------------------------------------------------
-
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_rounded,
-          ),
-          onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (c) => SellerSplashScreen()));
-          },
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: IconButton(
-              onPressed: () {
-                //validate upload form
-                uploading == true ? null : validateUploadForm();
-              },
-              icon: const Icon(
-                Icons.cloud_upload,
-              ),
-            ),
-          ),
-        ],
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-              gradient: LinearGradient(
-            colors: [
-              Colors.black,
-              Colors.black,
-            ],
-            begin: FractionalOffset(0.0, 0.0),
-            end: FractionalOffset(1.0, 0.0),
-            stops: [0.0, 1.0],
-            tileMode: TileMode.clamp,
-          )),
-        ),
-        title: const Text("Upload New Brand"),
-        centerTitle: true,
-      ),
-      body: ListView(
-        children: [
-          uploading == true ? linearProgressBar() : Container(),
-
-          //image
-          SizedBox(
-            height: 230,
-            width: MediaQuery.of(context).size.width * 0.8,
-            child: Center(
-              child: AspectRatio(
-                aspectRatio: 16 / 9,
-                child: Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: FileImage(
-                        File(
-                          imgXFile!.path,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          const Divider(
-            color: Colors.black,
-            thickness: 1,
-          ),
-
-          //brand info
-          ListTile(
-            leading: const Icon(
-              Icons.perm_device_information,
-              color: Colors.black,
-            ),
-            title: SizedBox(
-              width: 250,
-              child: TextField(
-                controller: brandInfoTextEditingController,
-                decoration: const InputDecoration(
-                  hintText: "brand info",
-                  hintStyle: TextStyle(color: Colors.black),
-                  border: InputBorder.none,
-                ),
-              ),
-            ),
-          ),
-          const Divider(
-            color: Colors.black,
-            thickness: 1,
-          ),
-
-          //brand title
-          ListTile(
-            leading: const Icon(
-              Icons.title,
-              color: Colors.black,
-            ),
-            title: SizedBox(
-              width: 250,
-              child: TextField(
-                controller: brandTitleTextEditingController,
-                decoration: const InputDecoration(
-                  hintText: "brand title",
-                  hintStyle: TextStyle(color: Colors.black),
-                  border: InputBorder.none,
-                ),
-              ),
-            ),
-          ),
-          const Divider(
-            color: Colors.pinkAccent,
-            thickness: 1,
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return imgXFile == null ? defaultScreen() : uploadFormScreen();
   }
 
-  defaultScreen() {
+  Widget defaultScreen() {
     return Scaffold(
       appBar: AppBar(
         flexibleSpace: Container(
@@ -293,6 +156,121 @@ class _UploadBrandsScreenState extends State<UploadBrandsScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget uploadFormScreen() {
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back_rounded,
+          ),
+          onPressed: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (c) => SellerSplashScreen()));
+          },
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: IconButton(
+              onPressed: () {
+                uploading == true ? null : validateUploadForm();
+              },
+              icon: const Icon(
+                Icons.cloud_upload,
+              ),
+            ),
+          ),
+        ],
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+              gradient: LinearGradient(
+            colors: [
+              Colors.black,
+              Colors.black,
+            ],
+            begin: FractionalOffset(0.0, 0.0),
+            end: FractionalOffset(1.0, 0.0),
+            stops: [0.0, 1.0],
+            tileMode: TileMode.clamp,
+          )),
+        ),
+        title: const Text("Upload New Brand"),
+        centerTitle: true,
+      ),
+      body: ListView(
+        children: [
+          uploading == true ? linearProgressBar() : Container(),
+          SizedBox(
+            height: 230,
+            width: MediaQuery.of(context).size.width * 0.8,
+            child: Center(
+              child: AspectRatio(
+                aspectRatio: 16 / 9,
+                child: Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: FileImage(
+                        File(
+                          imgXFile!.path,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const Divider(
+            color: Colors.black,
+            thickness: 1,
+          ),
+          ListTile(
+            leading: const Icon(
+              Icons.perm_device_information,
+              color: Colors.black,
+            ),
+            title: SizedBox(
+              width: 250,
+              child: TextField(
+                controller: brandInfoTextEditingController,
+                decoration: const InputDecoration(
+                  hintText: "brand info",
+                  hintStyle: TextStyle(color: Colors.black),
+                  border: InputBorder.none,
+                ),
+              ),
+            ),
+          ),
+          const Divider(
+            color: Colors.black,
+            thickness: 1,
+          ),
+          ListTile(
+            leading: const Icon(
+              Icons.title,
+              color: Colors.black,
+            ),
+            title: SizedBox(
+              width: 250,
+              child: TextField(
+                controller: brandTitleTextEditingController,
+                decoration: const InputDecoration(
+                  hintText: "brand title",
+                  hintStyle: TextStyle(color: Colors.black),
+                  border: InputBorder.none,
+                ),
+              ),
+            ),
+          ),
+          const Divider(
+            color: Colors.pinkAccent,
+            thickness: 1,
+          ),
+        ],
       ),
     );
   }
@@ -359,21 +337,13 @@ class _UploadBrandsScreenState extends State<UploadBrandsScreen> {
 
   getImageFromGallery() async {
     Navigator.pop(context);
-
     imgXFile = await imagePicker.pickImage(source: ImageSource.gallery);
-
-    setState(() {
-      imgXFile;
-    });
+    setState(() {});
   }
 
   captureImagewithPhoneCamera() async {
     Navigator.pop(context);
-
     imgXFile = await imagePicker.pickImage(source: ImageSource.camera);
-
-    setState(() {
-      imgXFile;
-    });
+    setState(() {});
   }
 }

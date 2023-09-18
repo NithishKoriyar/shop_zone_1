@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:shop_zone/api_key.dart';
 import 'package:shop_zone/seller/brandsScreens/seller_home_screen.dart';
 import 'package:shop_zone/seller/models/seller.dart';
@@ -40,16 +41,23 @@ class _RegistrationTabPageState extends State<RegistrationTabPage>
   String usersImageUrl = "";
 
   // The ImagePicker
-  Future<void> _getImage() async {
-    imageXFile = await _picker.pickImage(source: ImageSource.gallery);
-    setState(() {
-      imageXFile;
-      imagename = imageXFile?.path.split('/').last;
-      imagepath = File(imageXFile!.path);
-      imagedata = base64Encode(imagepath!.readAsBytesSync());
-      // print("hello:" + imagedata.toString());
-    });
-  }
+Future<void> _getImage() async {
+  imageXFile = await _picker.pickImage(source: ImageSource.gallery);
+  setState(() {
+    imageXFile;
+    String? originalName = imageXFile?.path.split('/').last.split('.').first; 
+    String? extension = imageXFile?.path.split('.').last;
+    
+    // Get the current date and time and format it
+    String formattedDateTime = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
+    
+    // Combine the original name with the formatted date and time
+    imagename = "${originalName}_$formattedDateTime.$extension";
+
+    imagepath = File(imageXFile!.path);
+    imagedata = base64Encode(imagepath!.readAsBytesSync());
+  });
+}
 
   //this function is send the image to the php code and it will upload to a folder with unique name
   Future<void> uploadImage() async {
@@ -63,7 +71,7 @@ class _RegistrationTabPageState extends State<RegistrationTabPage>
       if (response["success"] == true) {
         //see if is sending response
         //print("Uploaded Image Path: ${response["path"]}");
-        usersImageUrl = response["path"]; // Update the sellerImageUrl variable
+        usersImageUrl = response["path"];  // Update the sellerImageUrl variable
       } else {
         print("Something went wrong");
       }
@@ -213,7 +221,7 @@ class _RegistrationTabPageState extends State<RegistrationTabPage>
                 child: imageXFile == null
                     ? Icon(
                         Icons.add_photo_alternate,
-                        color: Colors.white,
+                        color: Colors.black,
                         size: MediaQuery.of(context).size.width * 0.20,
                       ) : null,
               ),
@@ -289,7 +297,7 @@ class _RegistrationTabPageState extends State<RegistrationTabPage>
 
             ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.pinkAccent,
+                  primary: Colors.white,
                   padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 12),
                 ),
                 onPressed: ()
@@ -299,7 +307,7 @@ class _RegistrationTabPageState extends State<RegistrationTabPage>
                 child: const Text(
                   "Sign Up",
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Colors.black,
                     fontWeight: FontWeight.bold,
                   ),
                 )

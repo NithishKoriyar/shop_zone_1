@@ -16,15 +16,15 @@ if ($priceResult->num_rows > 0) {
     $totalPrice = $itemPrice * $itemCounter;
 
     // Check if the user already has the itemId in their cart
-    $query = "SELECT cartId FROM userCart WHERE userId='$userId' AND itemId='$itemId'";
+    $query = "SELECT cartId FROM usercart WHERE userId='$userId' AND itemId='$itemId'";
     $result = $connectNow->query($query);
 
     if ($result->num_rows > 0) {
         // User already has this itemId. Let's update the itemCounter and totalPrice
-        $query = "UPDATE userCart SET itemCounter='$itemCounter', totalPrice='$totalPrice' WHERE userId='$userId' AND itemId='$itemId'";
+        $query = "UPDATE usercart SET itemCounter='$itemCounter', totalPrice='$totalPrice' WHERE userId='$userId' AND itemId='$itemId'";
     } else {
         // New item for this user. Insert it into the cart
-        $query = "INSERT INTO userCart (userId, itemId, itemCounter, totalPrice) VALUES ('$userId', '$itemId', '$itemCounter', '$totalPrice')";
+        $query = "INSERT INTO usercart (userId, itemId, itemCounter, totalPrice) VALUES ('$userId', '$itemId', '$itemCounter', '$totalPrice')";
     }
 
     if ($connectNow->query($query) === TRUE) {

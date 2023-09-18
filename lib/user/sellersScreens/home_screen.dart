@@ -75,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         centerTitle: true,
-        ),
+      ),
       body: CustomScrollView(
         slivers: [
           //image slider
@@ -165,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
       final sellersObjects =
           sellersList.map((item) => Sellers.fromJson(item)).toList();
       yield sellersObjects;
-      print("--------------------------------------------------------");
+      print("-----------------------------=======---------------------------");
       print(sellersList);
       print(sellersObjects);
     } else {
