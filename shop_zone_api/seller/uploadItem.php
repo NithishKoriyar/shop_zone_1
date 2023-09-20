@@ -1,42 +1,39 @@
 <?php
+
 include '../db_config.php';
 
-$itemInfo = $_POST['itemInfo'];
-$itemTitle = $_POST['itemTitle'];
-$itemDescription = $_POST['itemDescription'];
-$itemPrice = $_POST['itemPrice'];
-$itemID = $_POST['itemID'];
-$brandID = $_POST['brandID'];
-$sellerUID = $_POST['sellerUID'];
-$sellerName = $_POST['sellerName'];
+$data = json_decode(file_get_contents("php://input"), true);
 
-if(isset($_FILES['image'])){
-    $file_name = $_FILES['image']['name'];
-    $file_tmp = $_FILES['image']['tmp_name'];
-    
-    // Get the file extension (like jpg, png, etc.)
-    $file_extension = pathinfo($file_name, PATHINFO_EXTENSION);
-    
-    // Generate a unique name based on the current date and time
-    $new_file_name = date('YmdHis') . rand(100, 999) . "." . $file_extension;
-    
-    // Move the uploaded file to the new location
-    move_uploaded_file($file_tmp, "items/" . $new_file_name);
-    
-    // Create the thumbnail URL
-    $thumbnailUrl = "items/" . $new_file_name;
+if (isset($data['image']) && isset($data['itemInfo'])) {
+    $imageData = $data['image'];
+    $decodedImage = base64_decode($imageData);
 
-    $stmt = $connectNow->prepare("INSERT INTO items (brandID, itemID, sellerUID, sellerName, itemInfo, itemTitle, longDescription, price, publishedDate, status, thumbnailUrl) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), 'available', ?)");
-    $stmt->bind_param("sssssssss", $brandID, $itemID, $sellerUID, $sellerName, $itemInfo, $itemTitle, $itemDescription, $itemPrice, $thumbnailUrl);
-    
-    if($stmt->execute()){
-        echo json_encode(["success" => true, "message" => "Item uploaded successfully!"]);
+    $filename = "items/" . uniqid() . ".jpg";
+    file_put_contents($filename, $decodedImage);
+
+    $itemInfo = $connectNow->real_escape_string($data['itemInfo']);
+    $itemTitle = $connectNow->real_escape_string($data['itemTitle']);
+    $itemID = $connectNow->real_escape_string($data['itemID']);
+    $itemDescription = $connectNow->real_escape_string($data['itemDescription']);
+    $itemPrice = $connectNow->real_escape_string($data['itemPrice']);
+    $brandID = $connectNow->real_escape_string($data['brandID']);
+    $sellerUID = $connectNow->real_escape_string($data['sellerUID']);
+    $sellerName = $connectNow->real_escape_string($data['sellerName']);
+    $filename = $connectNow->real_escape_string($filename);
+
+    $sql = "INSERT INTO items (itemInfo, itemTitle, itemID, longDescription, price, brandID, sellerUID, sellerName, thumbnailUrl, status, publishedDate) 
+            VALUES ('$itemInfo', '$itemTitle', '$itemID', '$itemDescription', '$itemPrice', '$brandID', '$sellerUID', '$sellerName', '$filename', 'available', NOW())";
+
+    if ($connectNow->query($sql) === TRUE) {
+        echo json_encode(["success" => true, "message" => "Uploaded successfully!"]);
     } else {
-        echo json_encode(["success" => false, "message" => "Error uploading item."]);
+        echo json_encode(["success" => false, "message" => "Error: " . $connectNow->error]);
     }
-    $stmt->close();
 } else {
-    echo json_encode(["success" => false, "message" => "No image received."]);
+    echo json_encode(["success" => false, "message" => "Data is missing!"]);
 }
+
 $connectNow->close();
+
 ?>
+

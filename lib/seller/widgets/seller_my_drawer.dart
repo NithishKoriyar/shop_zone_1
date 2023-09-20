@@ -28,7 +28,7 @@ class _MyDrawerState extends State<MyDrawer>
   late String sellerName;
   late String sellerEmail;
   late String sellerID;
-  late String sellerImg;
+   late String sellerImg;
 
   @override
   void initState() {
@@ -75,7 +75,7 @@ class _MyDrawerState extends State<MyDrawer>
                   height: 130,
                   width: 130,
                   child: CircleAvatar(
-                   backgroundImage: NetworkImage(API.sellerImage + sellerImg),
+                   backgroundImage: NetworkImage(API.sellerImage + sellerImg!),
                   ),
                 ),
 

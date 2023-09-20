@@ -23,6 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $uploadedFile = $uploadDir . $new_file_name;
 
         // Move the file to the specified directory
+        try{
         if(move_uploaded_file($_FILES['thumbnailUrl']['tmp_name'], $uploadedFile)) {
             // File upload successful
             $brandInfo = $connectNow->real_escape_string($_POST['brandInfo']);
@@ -45,6 +46,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             echo json_encode(['status' => 'failed', 'message' => 'File upload failed.']);
         }
+        }catch(Exception $e) {
+            //   echo 'Message: ' .$e->getMessage();
+            echo json_encode(['status' => 'failed', 'message' => $e->getMessage() ]);
+        }
     } else {
         echo json_encode(['status' => 'failed', 'message' => 'No file uploaded.']);
     }
@@ -54,6 +59,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Close the connection
 $connectNow->close();
-?>
-
-

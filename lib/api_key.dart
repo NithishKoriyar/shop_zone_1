@@ -1,6 +1,6 @@
 class API {
   //! local host
-  static const hostConnect ="http://192.168.0.102/Amazon%20Clone/shop_zone/shop_zone_api/";
+  static const hostConnect ="http://192.168.0.109/Amazon%20Clone/shop_zone/shop_zone_api/";
   //! web server
  //static const hostConnect = "http://nithish.tech/shop_zone_api/";
   //!------------------------------USER API CONNECTIONS --------------------------------
@@ -16,6 +16,7 @@ class API {
       "$hostConnectUser/fetchSeller.php"; // fetch the seller name
   static const sellerBrandView =
       "$hostConnectUser/sellerBrandView.php"; //get seller Brand
+
   static const userSellerBrandItemView =
       "$hostConnectUser/userItemView.php"; //get seller Brand items
   static const addToCart = "$hostConnectUser/addToCart.php"; // add To Cart
@@ -61,6 +62,12 @@ class API {
   static const loginSeller = "$hostConnectSeller/login.php";
   static const sellerImage = "$hostConnectSeller/";
   static const saveBrandInfo = "$hostConnectSeller/saveBrandInfo.php";
+        //!!!---------------------------------------------------------------
+        static const saveBrandImage =
+      "$hostConnectSeller/saveBrandImage.php"; 
+        static const saveBrandData =
+      "$hostConnectSeller/saveBrandData.php"; 
+      //!!!---------------------------------------------------------------
   static const currentSellerBrandView =
       "$hostConnectSeller/Brands.php"; //seller home page Brand view information
   static const brandImage = "$hostConnectSeller/"; //Brand image

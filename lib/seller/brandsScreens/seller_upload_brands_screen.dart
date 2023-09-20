@@ -21,8 +21,10 @@ class _UploadBrandsScreenState extends State<UploadBrandsScreen> {
   late String sellerName, sellerEmail, sellerID;
   XFile? imgXFile;
   final ImagePicker imagePicker = ImagePicker();
-  TextEditingController brandInfoTextEditingController = TextEditingController();
-  TextEditingController brandTitleTextEditingController = TextEditingController();
+  TextEditingController brandInfoTextEditingController =
+      TextEditingController();
+  TextEditingController brandTitleTextEditingController =
+      TextEditingController();
   bool uploading = false;
   String brandID = DateTime.now().millisecondsSinceEpoch.toString();
 
@@ -55,37 +57,78 @@ class _UploadBrandsScreenState extends State<UploadBrandsScreen> {
           uploading = true;
         });
 
-        var request = http.MultipartRequest('POST', Uri.parse(API.saveBrandInfo));
-        request.files.add(await http.MultipartFile.fromPath('thumbnailUrl', imgXFile!.path));
-        request.fields['brandInfo'] = brandInfoTextEditingController.text.trim();
-        request.fields['brandTitle'] = brandTitleTextEditingController.text.trim();
-        request.fields['brandID'] = brandID;
-        request.fields['sellerUID'] = sellerID;
+        // Step 1: Upload the image
+final bytes = await imgXFile!.readAsBytes();
+final imgBase64 = base64Encode(bytes);
 
-        print("URL: ${API.saveBrandInfo}");
+final response = await http.post(
+  Uri.parse(API.saveBrandImage),
+  body: {
+    'thumbnailUrl': imgBase64,
+  },
+);
 
-        var response = await request.send();
-        var responseBody = await response.stream.bytesToString();
+final imgResponseBody = response.body;
 
         if (response.statusCode == 200) {
           try {
-            var jsonResponse = jsonDecode(responseBody);
-            if (jsonResponse['status'] == 'success') {
-              setState(() {
-                uploading = false;
-                brandID = DateTime.now().millisecondsSinceEpoch.toString();
-              });
-              Navigator.push(context, MaterialPageRoute(builder: (c) => HomeScreen()));
+            var imgJsonResponse = jsonDecode(imgResponseBody);
+            if (imgJsonResponse['status'] == 'success') {
+              String imageUrl = imgJsonResponse[
+                  'imageUrl']; // Assuming your PHP returns the URL of the uploaded image
+
+              // Step 2: Send the data
+              var dataRequest =
+                  http.MultipartRequest('POST', Uri.parse(API.saveBrandData));
+
+              dataRequest.fields['brandInfo'] =
+                  brandInfoTextEditingController.text.trim();
+              dataRequest.fields['brandTitle'] =
+                  brandTitleTextEditingController.text.trim();
+              dataRequest.fields['brandID'] = brandID;
+              dataRequest.fields['sellerUID'] = sellerID;
+              dataRequest.fields['thumbnailUrl'] =
+                  imageUrl; // Use the returned image URL
+
+              var dataResponse = await dataRequest.send();
+              var dataResponseBody = await dataResponse.stream.bytesToString();
+
+              if (dataResponse.statusCode == 200) {
+                try {
+                  var dataJsonResponse = jsonDecode(dataResponseBody);
+                  if (dataJsonResponse['status'] == 'success') {
+                    setState(() {
+                      uploading = false;
+                      brandID =
+                          DateTime.now().millisecondsSinceEpoch.toString();
+                    });
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (c) => HomeScreen()));
+                        Fluttertoast.showToast(msg: 'Brand Added Successfully');
+                  } else {
+                    Fluttertoast.showToast(msg: dataJsonResponse['message']);
+                  }
+                } catch (e) {
+                  Fluttertoast.showToast(
+                      msg: 'Error parsing data response: $e');
+                }
+              } else {
+                Fluttertoast.showToast(
+                    msg:
+                        'Data server responded with code: ${dataResponse.statusCode}');
+              }
             } else {
-              Fluttertoast.showToast(msg: jsonResponse['message']);
+              Fluttertoast.showToast(msg: imgJsonResponse['message']);
             }
           } catch (e) {
-            Fluttertoast.showToast(msg: 'Error parsing response: $e');
+            Fluttertoast.showToast(
+                msg: 'Error parsing image upload response: $e');
           }
         } else {
-          Fluttertoast.showToast(msg: 'Server responded with code: ${response.statusCode}');
+          Fluttertoast.showToast(
+              msg:
+                  'Image server responded with code: ${response.statusCode}');
         }
-
       } else {
         Fluttertoast.showToast(msg: "Please write brand info and brand title.");
       }
@@ -93,7 +136,6 @@ class _UploadBrandsScreenState extends State<UploadBrandsScreen> {
       Fluttertoast.showToast(msg: "Please choose an image.");
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -169,7 +211,7 @@ class _UploadBrandsScreenState extends State<UploadBrandsScreen> {
           ),
           onPressed: () {
             Navigator.push(context,
-                MaterialPageRoute(builder: (c) => SellerSplashScreen()));
+                MaterialPageRoute(builder: (c) => const SellerSplashScreen()));
           },
         ),
         actions: [
