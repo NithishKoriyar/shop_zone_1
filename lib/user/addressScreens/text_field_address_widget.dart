@@ -6,8 +6,9 @@ class TextFieldAddressWidget extends StatelessWidget
 {
   String? hint;
   TextEditingController? controller;
+  TextInputType? keyboardType;
 
-  TextFieldAddressWidget({this.hint, this.controller,});
+  TextFieldAddressWidget({this.hint, this.controller,this.keyboardType,});
 
   @override
   Widget build(BuildContext context)
@@ -16,6 +17,7 @@ class TextFieldAddressWidget extends StatelessWidget
       padding: const EdgeInsets.all(18.0),
       child: TextFormField(
         controller: controller,
+        keyboardType: keyboardType,
         style: const TextStyle(
           color: Colors.black,
         ),

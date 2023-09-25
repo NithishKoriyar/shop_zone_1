@@ -26,6 +26,9 @@ class _MyDrawerState extends State<MyDrawer> {
   late String userID;
   late String userImg;
 
+  bool dataLoaded = false;
+
+
   @override
   void initState() {
     super.initState();
@@ -42,6 +45,7 @@ class _MyDrawerState extends State<MyDrawer> {
     userEmail = currentUserController.user.user_email;
     userID = currentUserController.user.user_id.toString();
     userImg = currentUserController.user.user_profile;
+    dataLoaded = true;
   }
 
   void printUserInfo() {
@@ -55,6 +59,10 @@ class _MyDrawerState extends State<MyDrawer> {
   Widget build(BuildContext context) {
     // Check if sellerImg is null before accessing it.
 // Placeholder if sellerImg is empty.
+  if (!dataLoaded) {
+    // Return a loading widget or an empty drawer until data is loaded
+    return Drawer(child: Center(child: CircularProgressIndicator()));
+  }
 
     return Drawer(
       backgroundColor: Colors.black54,

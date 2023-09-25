@@ -9,6 +9,7 @@ import 'package:smooth_star_rating_nsafe/smooth_star_rating.dart';
 
 import '../splashScreen/my_splash_screen.dart';
 
+// ignore: must_be_immutable
 class RateSellerScreen extends StatefulWidget {
   Orders? model;
 

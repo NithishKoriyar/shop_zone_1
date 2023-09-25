@@ -84,9 +84,7 @@ Future<bool> saveOrderToBackend(Map<String, dynamic> orderData) async {
       "orderBy": userID,
       "productIDs": widget.model?.cartId,
       "paymentDetails": "Cash On Delivery",
-      "orderTime": DateTime.now()
-          .toString()
-          .split('.')[0], // Format: 2023-08-25 10:40:32
+      "orderTime": DateTime.now().toString().split('.')[0], // Format: 2023-08-25 10:40:32
       "orderId": orderId,
       "isSuccess": true,
       "sellerUID": widget.model?.sellerUID,

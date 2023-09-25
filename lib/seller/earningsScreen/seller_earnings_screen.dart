@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shop_zone/api_key.dart';
 import 'package:shop_zone/seller/sellerPreferences/current_seller.dart';
-import '../global/seller_global.dart';
 import '../splashScreen/seller_my_splash_screen.dart';
 
 

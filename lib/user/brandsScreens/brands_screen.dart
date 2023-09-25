@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:shop_zone/api_key.dart';
-import 'package:shop_zone/seller/models/seller.dart';
 import 'package:shop_zone/user/models/brands.dart';
 import 'package:shop_zone/user/models/sellers.dart';
 import 'package:shop_zone/user/widgets/my_drawer.dart';

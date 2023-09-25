@@ -108,6 +108,7 @@ class _LoginTabPageState extends State<LoginTabPage> {
                   hintText: "Email",
                   isObsecre: false,
                   enabled: true,
+                  keyboardType: TextInputType.emailAddress,
                 ),
 
                 //pass
@@ -117,6 +118,7 @@ class _LoginTabPageState extends State<LoginTabPage> {
                   hintText: "Password",
                   isObsecre: true,
                   enabled: true,
+                  keyboardType: TextInputType.streetAddress,
                 ),
 
                 const SizedBox(

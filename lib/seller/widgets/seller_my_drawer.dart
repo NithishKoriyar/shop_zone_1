@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shop_zone/seller/brandsScreens/seller_home_screen.dart';
@@ -11,24 +12,20 @@ import 'package:shop_zone/user/splashScreen/my_splash_screen.dart';
 import '../../api_key.dart';
 import '../splashScreen/seller_my_splash_screen.dart';
 
-
-class MyDrawer extends StatefulWidget
-{
+class MyDrawer extends StatefulWidget {
   @override
   State<MyDrawer> createState() => _MyDrawerState();
 }
 
-
-
-class _MyDrawerState extends State<MyDrawer>
-{
-    //!seller information--------------------------------------
+class _MyDrawerState extends State<MyDrawer> {
   final CurrentSeller currentSellerController = Get.put(CurrentSeller());
 
   late String sellerName;
   late String sellerEmail;
   late String sellerID;
-   late String sellerImg;
+  late String sellerImg;
+
+  bool dataLoaded = false;  // added this flag
 
   @override
   void initState() {
@@ -36,8 +33,7 @@ class _MyDrawerState extends State<MyDrawer>
     currentSellerController.getSellerInfo().then((_) {
       setSellerInfo();
       printSellerInfo();
-      // Once the seller info is set, call setState to trigger a rebuild.
-      setState(() {});
+      setState(() {});  // This will trigger a rebuild once data is loaded.
     });
   }
 
@@ -46,24 +42,27 @@ class _MyDrawerState extends State<MyDrawer>
     sellerEmail = currentSellerController.seller.seller_email;
     sellerID = currentSellerController.seller.seller_id.toString();
     sellerImg = currentSellerController.seller.seller_profile;
+
+    dataLoaded = true;  // set the flag to true here
   }
 
   void printSellerInfo() {
     print('Seller Name: $sellerName');
     print('Seller Email: $sellerEmail');
-    print('Seller ID: $sellerID'); // Corrected variable name
+    print('Seller ID: $sellerID');
     print('Seller image: $sellerImg');
   }
-      //!seller information--------------------------------------
 
   @override
   Widget build(BuildContext context) {
-    // Check if sellerImg is null before accessing it.
-// Placeholder if sellerImg is empty.
+    if (!dataLoaded) {
+      // Return a loading widget or an empty drawer until data is loaded
+      return Drawer(child: Center(child: CircularProgressIndicator()));
+    }
 
     return Drawer(
       backgroundColor: Colors.black54,
-      child: ListView(
+ child: ListView(
         children: [
           // Header
           Container(
@@ -75,7 +74,7 @@ class _MyDrawerState extends State<MyDrawer>
                   height: 130,
                   width: 130,
                   child: CircleAvatar(
-                   backgroundImage: NetworkImage(API.sellerImage + sellerImg!),
+                   backgroundImage: NetworkImage(API.sellerImage + sellerImg),
                   ),
                 ),
 

@@ -108,13 +108,19 @@ class _AddressScreenState extends State<AddressScreen> {
                             index: address.count,
                             value: index,
                             addressID: snapshot.data![index]['id'],
-                            sellerUID: widget.model?.sellerUID, // assuming you have a sellerUID property in the Carts model
-                            totalPrice:  widget.model?.totalPrice,
+                            sellerUID: widget.model
+                                ?.sellerUID, // assuming you have a sellerUID property in the Carts model
+                            totalPrice: widget.model?.totalPrice,
                             cartId: widget.model?.cartId,
-                            model: widget.model,// assuming you have a totalPrice property in the Carts model
+                            model: widget
+                                .model, // assuming you have a totalPrice property in the Carts model
                           );
                         },
                         itemCount: snapshot.data!.length,
+                      );
+                    } else if (snapshot.hasData && snapshot.data!.isEmpty) {
+                      return const Center(
+                        child: Text("No address found."),
                       );
                     } else {
                       return Container();
@@ -135,10 +141,8 @@ class _AddressScreenState extends State<AddressScreen> {
 
   Stream<List<dynamic>> fetchAddressStream() async* {
     while (true) {
-      print("------address stream-------");
-
       Uri requestUri = Uri.parse('${API.fetchAddress}?uid=$userID');
-      print("Requesting URI: $requestUri"); 
+      print("Requesting URI: $requestUri");
 
       final response = await http.get(requestUri);
 

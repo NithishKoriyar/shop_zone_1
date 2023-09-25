@@ -1,6 +1,6 @@
 class API {
   //! local host
-  static const hostConnect ="http://192.168.0.109/Amazon%20Clone/shop_zone/shop_zone_api/";
+  static const hostConnect ="http://192.168.103.68/Amazon%20Clone/shop_zone/shop_zone_api/";
   //! web server
  //static const hostConnect = "http://nithish.tech/shop_zone_api/";
   //!------------------------------USER API CONNECTIONS --------------------------------
@@ -26,6 +26,8 @@ class API {
   static const fetchAddress = "$hostConnectUser/address.php"; // address
   static const addNewAddress =
       "$hostConnectUser/addNewAddress.php"; // add New Address
+        static const deleteAddress =
+      "$hostConnectUser/delete_address.php"; //delete address
   static const saveOrder = "$hostConnectUser/saveOrder.php"; // save Order
   static const getUserOrders =
       "$hostConnectUser/getUserOrders.php"; // get User Orders

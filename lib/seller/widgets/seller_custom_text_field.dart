@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 
-
 // ignore: must_be_immutable
-class CustomTextField extends StatefulWidget
-{
+class CustomTextField extends StatefulWidget {
   TextEditingController? textEditingController;
   IconData? iconData;
   String? hintText;
   bool? isObsecre = true;
   bool? enabled = true;
+  TextInputType? keyboardType; // Step 1: Add keyboardType property
 
   CustomTextField({
     this.textEditingController,
@@ -16,19 +15,16 @@ class CustomTextField extends StatefulWidget
     this.hintText,
     this.isObsecre,
     this.enabled,
+    this.keyboardType, // Step 1: Add keyboardType to constructor
   });
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();
 }
 
-
-
-class _CustomTextFieldState extends State<CustomTextField>
-{
+class _CustomTextFieldState extends State<CustomTextField> {
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -41,6 +37,7 @@ class _CustomTextFieldState extends State<CustomTextField>
         controller: widget.textEditingController,
         obscureText: widget.isObsecre!,
         cursorColor: Theme.of(context).primaryColor,
+        keyboardType: widget.keyboardType, // Step 2: Pass keyboardType to TextFormField
         decoration: InputDecoration(
           border: InputBorder.none,
           prefixIcon: Icon(

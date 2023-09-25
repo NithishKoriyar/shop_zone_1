@@ -4,13 +4,12 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shop_zone/api_key.dart';
+import 'package:shop_zone/user/addressScreens/address_screen.dart';
 import 'package:shop_zone/user/addressScreens/text_field_address_widget.dart';
 import 'package:shop_zone/user/userPreferences/current_user.dart';
 
-
 // ignore: must_be_immutable
-class SaveNewAddressScreen extends StatefulWidget
-{
+class SaveNewAddressScreen extends StatefulWidget {
   String? sellerUID;
   double? totalAmount;
 
@@ -20,8 +19,7 @@ class SaveNewAddressScreen extends StatefulWidget
   State<SaveNewAddressScreen> createState() => _SaveNewAddressScreenState();
 }
 
-class _SaveNewAddressScreenState extends State<SaveNewAddressScreen>
-{
+class _SaveNewAddressScreenState extends State<SaveNewAddressScreen> {
   TextEditingController name = TextEditingController();
   TextEditingController phoneNumber = TextEditingController();
   TextEditingController streetNumber = TextEditingController();
@@ -31,7 +29,7 @@ class _SaveNewAddressScreenState extends State<SaveNewAddressScreen>
   String completeAddress = "";
   final formKey = GlobalKey<FormState>();
 
-    final CurrentUser currentUserController = Get.put(CurrentUser());
+  final CurrentUser currentUserController = Get.put(CurrentUser());
 
   late String userName;
   late String userEmail;
@@ -62,25 +60,23 @@ class _SaveNewAddressScreenState extends State<SaveNewAddressScreen>
     print('user ID: $userID'); // Corrected variable name
     print('user image: $userImg');
   }
-  Widget build(BuildContext context)
-  {
+
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         flexibleSpace: Container(
           decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors:
-                [
-                  Colors.black,
-                  Colors.black,
-                ],
-                begin: FractionalOffset(0.0, 0.0),
-                end: FractionalOffset(1.0, 0.0),
-                stops: [0.0, 1.0],
-                tileMode: TileMode.clamp,
-              )
-          ),
+            colors: [
+              Colors.black,
+              Colors.black,
+            ],
+            begin: FractionalOffset(0.0, 0.0),
+            end: FractionalOffset(1.0, 0.0),
+            stops: [0.0, 1.0],
+            tileMode: TileMode.clamp,
+          )),
         ),
         title: const Text(
           "Shop Zone",
@@ -92,45 +88,57 @@ class _SaveNewAddressScreenState extends State<SaveNewAddressScreen>
         centerTitle: true,
         automaticallyImplyLeading: true,
       ),
-floatingActionButton: FloatingActionButton.extended(
-    onPressed: () async {
-        if (formKey.currentState!.validate()) {
-            completeAddress = streetNumber.text.trim() + ", " + flatHouseNumber.text.trim() + ", " + city.text.trim() + ", " + stateCountry.text.trim() + ".";
-            
-            var response = await http.post(
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () async {
+          if (formKey.currentState!.validate()) {
+            if (phoneNumber.text.length == 10) {
+              completeAddress = streetNumber.text.trim() +
+                  ", " +
+                  flatHouseNumber.text.trim() +
+                  ", " +
+                  city.text.trim() +
+                  ", " +
+                  stateCountry.text.trim() +
+                  ".";
+
+              var response = await http.post(
                 Uri.parse(API.addNewAddress),
                 body: jsonEncode({
-                    "uid": userID,
-                    "name": name.text.trim(),
-                    "phoneNumber": phoneNumber.text.trim(),
-                    "streetNumber": streetNumber.text.trim(),
-                    "flatHouseNumber": flatHouseNumber.text.trim(),
-                    "city": city.text.trim(),
-                    "stateCountry": stateCountry.text.trim(),
-                    "completeAddress": completeAddress,
+                  "uid": userID,
+                  "name": name.text.trim(),
+                  "phoneNumber": phoneNumber.text.trim(),
+                  "streetNumber": streetNumber.text.trim(),
+                  "flatHouseNumber": flatHouseNumber.text.trim(),
+                  "city": city.text.trim(),
+                  "stateCountry": stateCountry.text.trim(),
+                  "completeAddress": completeAddress,
                 }),
-            );
+              );
 
-            if (response.statusCode == 200) {
+              if (response.statusCode == 200) {
                 var responseData = jsonDecode(response.body);
                 Fluttertoast.showToast(msg: responseData['message']);
                 formKey.currentState!.reset();
-            } else {
+                // ignore: use_build_context_synchronously
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (c) => AddressScreen()));
+              } else {
                 Fluttertoast.showToast(msg: "Error saving address.");
+              }
+            } else {
+              Fluttertoast.showToast(msg: "please enter valid phone number.");
             }
-        }
-    },
-    label: const Text("Save Now"),
-    icon: const Icon(
-        Icons.save,
-        color: Colors.white,
-    ),
-),
-
+          }
+        },
+        label: const Text("Save Now"),
+        icon: const Icon(
+          Icons.save,
+          color: Colors.white,
+        ),
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-
             const Padding(
               padding: EdgeInsets.all(18.0),
               child: Text(
@@ -142,46 +150,43 @@ floatingActionButton: FloatingActionButton.extended(
                 ),
               ),
             ),
-
             Form(
               key: formKey,
               child: Column(
                 children: [
-
                   TextFieldAddressWidget(
                     hint: "Name",
                     controller: name,
+                     keyboardType: TextInputType.name,
                   ),
-
                   TextFieldAddressWidget(
                     hint: "Phone Number",
                     controller: phoneNumber,
+                     keyboardType: TextInputType.phone,
                   ),
-
                   TextFieldAddressWidget(
                     hint: "Street Number",
                     controller: streetNumber,
+                     keyboardType: TextInputType.text,
                   ),
-
                   TextFieldAddressWidget(
                     hint: "Flat / House Number",
                     controller: flatHouseNumber,
+                     keyboardType: TextInputType.text,
                   ),
-
                   TextFieldAddressWidget(
                     hint: "City",
                     controller: city,
+                     keyboardType: TextInputType.text,
                   ),
-
                   TextFieldAddressWidget(
                     hint: "State / Country",
                     controller: stateCountry,
+                     keyboardType: TextInputType.text,
                   ),
-
                 ],
               ),
             ),
-
           ],
         ),
       ),

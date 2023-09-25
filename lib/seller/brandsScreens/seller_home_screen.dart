@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:http/http.dart' as http;
@@ -54,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   late String sellerName;
   late String sellerEmail;
-  late String sellerID;
+  String? sellerID;
   late String sellerImg;
 
   @override
@@ -63,7 +62,6 @@ class _HomeScreenState extends State<HomeScreen> {
     currentSellerController.getSellerInfo().then((_) {
       setSellerInfo();
       printSellerInfo();
-      // Once the seller info is set, call setState to trigger a rebuild.
       setState(() {});
       // PushNotificationsSystem pushNotificationsSystem = PushNotificationsSystem();
       // pushNotificationsSystem.whenNotificationReceived(context);
@@ -139,53 +137,64 @@ class _HomeScreenState extends State<HomeScreen> {
           //1. write query
           //2  model
           //3. ui design widget
-          StreamBuilder(
-            stream: fetchBrandsStream(sellerID),
-            builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
-              if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                return SliverStaggeredGrid.countBuilder(
-                  crossAxisCount: 1,
-                  staggeredTileBuilder: (c) => const StaggeredTile.fit(1),
-                  itemBuilder: (context, index) {
-                    Brands brandsModel = Brands.fromJson(snapshot.data![index]);
-
-                    return BrandsUiDesignWidget(
-                      model: brandsModel,
-                      context: context,
-                    );
-                  },
-                  itemCount: snapshot.data!.length,
-                );
-              } else {
-                return const SliverToBoxAdapter(
-                  child: Center(
-                    child: Text(
-                      "No brands exists",
-                    ),
-                  ),
-                );
-              }
-            },
-          ),
+          if (sellerID != null)
+            StreamBuilder(
+              stream: fetchBrandsStream(sellerID!),
+              builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return SliverFillRemaining(
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                } else if (snapshot.hasError) {
+                  return SliverFillRemaining(
+                    child: Center(child: Text('Error: ${snapshot.error}')),
+                  );
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return SliverFillRemaining(
+                    child: Center(child: Text('No brands exists')),
+                  );
+                } else {
+                  List<dynamic> data = snapshot.data!;
+                  return SliverStaggeredGrid.countBuilder(
+                    crossAxisCount: 1,
+                    staggeredTileBuilder: (c) => StaggeredTile.fit(1),
+                    itemBuilder: (context, index) {
+                      Brands brandsModel = Brands.fromJson(data[index]);
+                      return BrandsUiDesignWidget(
+                        model: brandsModel,
+                        context: context,
+                      );
+                    },
+                    itemCount: data.length,
+                  );
+                }
+              },
+            )
         ],
       ),
     );
   }
+
 //   final String apiUrl = '${API.currentSellerBrandView}?uid=$sellerID';
 //http://192.168.0.113/amazon%20clone%20in%20backend%20php/shop_zone/shop_zone_api/seller/Brands.php
-  Stream<List<dynamic>> fetchBrandsStream(String sellerID) async* {
+Stream<List<dynamic>> fetchBrandsStream(String sellerID) async* {
+  final response = await http.get(Uri.parse("${API.currentSellerBrandView}?sellerID=$sellerID"));
+  print("${API.currentSellerBrandView}?sellerID=$sellerID");
 
-    final response = await http.get(
-        Uri.parse("${API.currentSellerBrandView}?sellerID=$sellerID")
-    );
-
-    if (response.statusCode == 200) {
-      List<dynamic> brands = json.decode(response.body);
-      yield brands;
+  if (response.statusCode == 200) {
+    var decodedResponse = json.decode(response.body);
+    
+    if (decodedResponse is List<dynamic>) {
+      yield decodedResponse;
       print("++++++++++++++++++++++++++");
-      print(brands);
+      print(decodedResponse);
     } else {
-      throw Exception('Failed to load brands');
+      //throw Exception('Expected a list but got a different type');
+       Text('No brands exists');
     }
+  } else {
+    throw Exception('Failed to load brands');
   }
+}
+
 }

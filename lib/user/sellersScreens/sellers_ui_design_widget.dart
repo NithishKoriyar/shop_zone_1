@@ -61,6 +61,7 @@ class _SellersUIDesignWidgetState extends State<SellersUIDesignWidget> {
                   ),
                 ),
                 SmoothStarRating(
+                  // ignore: unnecessary_null_comparison
                   rating: widget.model!.rating == null
                       ? 0.0
                       : double.parse(widget.model!.rating.toString()),

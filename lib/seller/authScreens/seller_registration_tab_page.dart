@@ -12,21 +12,17 @@ import '../widgets/seller_custom_text_field.dart';
 import '../widgets/seller_loading_dialog.dart';
 import 'package:http/http.dart' as http;
 
-
-class RegistrationTabPage extends StatefulWidget
-{
+class RegistrationTabPage extends StatefulWidget {
   @override
   State<RegistrationTabPage> createState() => _RegistrationTabPageState();
 }
 
-
-
-class _RegistrationTabPageState extends State<RegistrationTabPage>
-{
+class _RegistrationTabPageState extends State<RegistrationTabPage> {
   TextEditingController nameTextEditingController = TextEditingController();
   TextEditingController emailTextEditingController = TextEditingController();
   TextEditingController passwordTextEditingController = TextEditingController();
-  TextEditingController confirmPasswordTextEditingController = TextEditingController();
+  TextEditingController confirmPasswordTextEditingController =
+      TextEditingController();
   TextEditingController phoneTextEditingController = TextEditingController();
   TextEditingController locationTextEditingController = TextEditingController();
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -41,23 +37,24 @@ class _RegistrationTabPageState extends State<RegistrationTabPage>
   String usersImageUrl = "";
 
   // The ImagePicker
-Future<void> _getImage() async {
-  imageXFile = await _picker.pickImage(source: ImageSource.gallery);
-  setState(() {
-    imageXFile;
-    String? originalName = imageXFile?.path.split('/').last.split('.').first; 
-    String? extension = imageXFile?.path.split('.').last;
-    
-    // Get the current date and time and format it
-    String formattedDateTime = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
-    
-    // Combine the original name with the formatted date and time
-    imagename = "${originalName}_$formattedDateTime.$extension";
+  Future<void> _getImage() async {
+    imageXFile = await _picker.pickImage(source: ImageSource.gallery);
+    setState(() {
+      imageXFile;
+      String? originalName = imageXFile?.path.split('/').last.split('.').first;
+      String? extension = imageXFile?.path.split('.').last;
 
-    imagepath = File(imageXFile!.path);
-    imagedata = base64Encode(imagepath!.readAsBytesSync());
-  });
-}
+      // Get the current date and time and format it
+      String formattedDateTime =
+          DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
+
+      // Combine the original name with the formatted date and time
+      imagename = "${originalName}_$formattedDateTime.$extension";
+
+      imagepath = File(imageXFile!.path);
+      imagedata = base64Encode(imagepath!.readAsBytesSync());
+    });
+  }
 
   //this function is send the image to the php code and it will upload to a folder with unique name
   Future<void> uploadImage() async {
@@ -71,7 +68,7 @@ Future<void> _getImage() async {
       if (response["success"] == true) {
         //see if is sending response
         //print("Uploaded Image Path: ${response["path"]}");
-        usersImageUrl = response["path"];  // Update the sellerImageUrl variable
+        usersImageUrl = response["path"]; // Update the sellerImageUrl variable
       } else {
         print("Something went wrong");
       }
@@ -90,7 +87,8 @@ Future<void> _getImage() async {
           confirmPasswordTextEditingController.text) {
         if (confirmPasswordTextEditingController.text.isNotEmpty &&
             emailTextEditingController.text.isNotEmpty &&
-            nameTextEditingController.text.isNotEmpty) {
+            nameTextEditingController.text.isNotEmpty &&
+            phoneTextEditingController.text.length == 10) {
           //if all the form is valid it will call this function
           authenticateSeller();
         } else {
@@ -170,6 +168,7 @@ Future<void> _getImage() async {
       if (res.statusCode == 200) {
         //from flutter app the connection with api to server - success
         var resBodyOfSignUp = jsonDecode(res.body);
+        print(res.body);
         if (resBodyOfSignUp['success'] == true) {
           //also get user data from php file as a response
           //its in json format so decode using User class and save data in sellerInfo variable
@@ -193,21 +192,19 @@ Future<void> _getImage() async {
     }
   }
 
-  
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Container(
         child: Column(
           children: [
-
-            const SizedBox(height: 12,),
+            const SizedBox(
+              height: 12,
+            ),
 
             //get-capture image
             GestureDetector(
-              onTap: ()
-              {
+              onTap: () {
                 _getImage();
               },
               child: CircleAvatar(
@@ -215,26 +212,26 @@ Future<void> _getImage() async {
                 backgroundColor: Colors.white,
                 backgroundImage: imageXFile == null
                     ? null
-                    : FileImage(
-                        File(imageXFile!.path)
-                      ),
+                    : FileImage(File(imageXFile!.path)),
                 child: imageXFile == null
                     ? Icon(
                         Icons.add_photo_alternate,
                         color: Colors.black,
                         size: MediaQuery.of(context).size.width * 0.20,
-                      ) : null,
+                      )
+                    : null,
               ),
             ),
 
-            const SizedBox(height: 12,),
+            const SizedBox(
+              height: 12,
+            ),
 
             //inputs form fields
             Form(
               key: formKey,
               child: Column(
                 children: [
-
                   //name
                   CustomTextField(
                     textEditingController: nameTextEditingController,
@@ -242,6 +239,7 @@ Future<void> _getImage() async {
                     hintText: "Name",
                     isObsecre: false,
                     enabled: true,
+                    keyboardType: TextInputType.name,
                   ),
 
                   //email
@@ -251,6 +249,7 @@ Future<void> _getImage() async {
                     hintText: "Email",
                     isObsecre: false,
                     enabled: true,
+                    keyboardType: TextInputType.emailAddress,
                   ),
 
                   //pass
@@ -260,6 +259,7 @@ Future<void> _getImage() async {
                     hintText: "Password",
                     isObsecre: true,
                     enabled: true,
+                    keyboardType: TextInputType.visiblePassword,
                   ),
 
                   //confirm pass
@@ -269,6 +269,7 @@ Future<void> _getImage() async {
                     hintText: "Confirm Password",
                     isObsecre: true,
                     enabled: true,
+                    keyboardType: TextInputType.visiblePassword,
                   ),
 
                   //phone
@@ -278,6 +279,7 @@ Future<void> _getImage() async {
                     hintText: "Phone",
                     isObsecre: false,
                     enabled: true,
+                    keyboardType: TextInputType.phone,
                   ),
 
                   //location
@@ -287,10 +289,12 @@ Future<void> _getImage() async {
                     hintText: "Address",
                     isObsecre: false,
                     enabled: true,
+                    keyboardType: TextInputType.text,
                   ),
 
-                  const SizedBox(height: 20,),
-
+                  const SizedBox(
+                    height: 20,
+                  ),
                 ],
               ),
             ),
@@ -298,10 +302,10 @@ Future<void> _getImage() async {
             ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   primary: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 50, vertical: 12),
                 ),
-                onPressed: ()
-                {
+                onPressed: () {
                   formValidation();
                 },
                 child: const Text(
@@ -310,11 +314,11 @@ Future<void> _getImage() async {
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
                   ),
-                )
+                )),
+
+            const SizedBox(
+              height: 30,
             ),
-
-            const SizedBox(height: 30,),
-
           ],
         ),
       ),

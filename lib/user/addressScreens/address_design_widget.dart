@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_zone/api_key.dart';
+import 'package:shop_zone/user/addressScreens/address_screen.dart';
 import 'package:shop_zone/user/assistantMethods/address_changer.dart';
 import 'package:shop_zone/user/models/address.dart';
 import 'package:shop_zone/user/models/cart.dart';
 import 'package:shop_zone/user/placeOrderScreen/place_order_screen.dart';
+import 'package:http/http.dart' as http;
 
 // ignore: must_be_immutable
 class AddressDesignWidget extends StatefulWidget {
@@ -24,15 +27,37 @@ class AddressDesignWidget extends StatefulWidget {
     this.addressID,
     this.sellerUID,
     this.totalPrice,
-    this.cartId, 
+    this.cartId,
   });
-  
 
   @override
   State<AddressDesignWidget> createState() => _AddressDesignWidgetState();
 }
 
 class _AddressDesignWidgetState extends State<AddressDesignWidget> {
+  Future<void> _deleteAddress(int addressID) async {
+    final url = Uri.parse(API.deleteAddress);
+    final response = await http.post(url, body: {'address_id': addressID.toString()});
+    print(API.deleteAddress);
+
+    if (response.statusCode == 200) {
+                    Navigator.push(
+                
+                  context, MaterialPageRoute(builder: (c) => AddressScreen(
+                    model: widget.model,
+                    )));
+
+      // Refresh the page
+      setState(() {
+        // Any state changes that should trigger a UI rebuild go here
+        // For example, if you have a list of addresses, you would remove the address here.
+      });
+
+    } else {
+      print('Failed to delete address');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -142,30 +167,59 @@ class _AddressDesignWidgetState extends State<AddressDesignWidget> {
           //button
           widget.value == Provider.of<AddressChanger>(context).count
               ? Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.purpleAccent,
-                    ),
-                    onPressed: () {
-                      // Print the values of addressID, sellerUID, and totalAmount
-                      print("addressID: ${widget.addressID}");
-                      print("totalAmount: ${widget.totalPrice}");
-                      print("cartId: ${widget.cartId}");
+                  padding: const EdgeInsets.all(0.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment
+                        .center, // Center the buttons horizontally
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              Colors.red, // Red color for delete button
+                        ),
+                        onPressed: () {
+                          // Implement delete functionality here
+                          int? addressIdInt;
+                          try {
+                            addressIdInt = int.parse(widget.addressID!);
+                            _deleteAddress(addressIdInt);
+                          } catch (e) {
+                            print("Error converting addressID to int: $e");
+                          }
+// Pass the address ID to delete
+                        },
+                        child: const Text("Delete"),
+                      ),
+                      const SizedBox(
+                        width: 50,
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.purpleAccent,
+                          padding: const EdgeInsets.all(8.0),
+                        ),
+                        onPressed: () {
+                          // Print the values of addressID, sellerUID, and totalAmount
+                          print("addressID: ${widget.addressID}");
+                          print("totalAmount: ${widget.totalPrice}");
+                          print("cartId: ${widget.cartId}");
 
-                      //send user to Place Order Screen finally
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
+                          // Send the user to Place Order Screen
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
                               builder: (c) => PlaceOrderScreen(
-                                    addressID: widget.addressID,
-                                    totalAmount: widget.totalPrice, 
-                                    cartId: widget.cartId,
-                                    model: widget.model,
-                                    
-                                  )));
-                    },
-                    child: const Text("Proceed"),
+                                addressID: widget.addressID,
+                                totalAmount: widget.totalPrice,
+                                cartId: widget.cartId,
+                                model: widget.model,
+                              ),
+                            ),
+                          );
+                        },
+                        child: const Text("Proceed"),
+                      ),
+                    ],
                   ),
                 )
               : Container(),
