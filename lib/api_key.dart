@@ -1,8 +1,8 @@
 class API {
   //! local host
-  static const hostConnect ="http://192.168.103.68/Amazon%20Clone/shop_zone/shop_zone_api/";
+  //static const hostConnect ="http://192.168.103.68/Amazon%20Clone/shop_zone/shop_zone_api/";
   //! web server
- //static const hostConnect = "http://nithish.tech/shop_zone_api/";
+  static const hostConnect = "http://nithish.tech/shop_zone_api/";
   //!------------------------------USER API CONNECTIONS --------------------------------
 
   static const hostConnectUser = "$hostConnect/user";
@@ -26,7 +26,7 @@ class API {
   static const fetchAddress = "$hostConnectUser/address.php"; // address
   static const addNewAddress =
       "$hostConnectUser/addNewAddress.php"; // add New Address
-        static const deleteAddress =
+  static const deleteAddress =
       "$hostConnectUser/delete_address.php"; //delete address
   static const saveOrder = "$hostConnectUser/saveOrder.php"; // save Order
   static const getUserOrders =
@@ -64,12 +64,10 @@ class API {
   static const loginSeller = "$hostConnectSeller/login.php";
   static const sellerImage = "$hostConnectSeller/";
   static const saveBrandInfo = "$hostConnectSeller/saveBrandInfo.php";
-        //!!!---------------------------------------------------------------
-        static const saveBrandImage =
-      "$hostConnectSeller/saveBrandImage.php"; 
-        static const saveBrandData =
-      "$hostConnectSeller/saveBrandData.php"; 
-      //!!!---------------------------------------------------------------
+  //!!!---------------------------------------------------------------
+  static const saveBrandImage = "$hostConnectSeller/saveBrandImage.php";
+  static const saveBrandData = "$hostConnectSeller/saveBrandData.php";
+  //!!!---------------------------------------------------------------
   static const currentSellerBrandView =
       "$hostConnectSeller/Brands.php"; //seller home page Brand view information
   static const brandImage = "$hostConnectSeller/"; //Brand image

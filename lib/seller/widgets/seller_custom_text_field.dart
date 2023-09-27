@@ -37,7 +37,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
         controller: widget.textEditingController,
         obscureText: widget.isObsecre!,
         cursorColor: Theme.of(context).primaryColor,
-        keyboardType: widget.keyboardType, // Step 2: Pass keyboardType to TextFormField
+        keyboardType:
+            widget.keyboardType, // Step 2: Pass keyboardType to TextFormField
         decoration: InputDecoration(
           border: InputBorder.none,
           prefixIcon: Icon(

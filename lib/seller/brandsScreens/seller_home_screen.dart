@@ -177,24 +177,24 @@ class _HomeScreenState extends State<HomeScreen> {
 
 //   final String apiUrl = '${API.currentSellerBrandView}?uid=$sellerID';
 //http://192.168.0.113/amazon%20clone%20in%20backend%20php/shop_zone/shop_zone_api/seller/Brands.php
-Stream<List<dynamic>> fetchBrandsStream(String sellerID) async* {
-  final response = await http.get(Uri.parse("${API.currentSellerBrandView}?sellerID=$sellerID"));
-  print("${API.currentSellerBrandView}?sellerID=$sellerID");
+  Stream<List<dynamic>> fetchBrandsStream(String sellerID) async* {
+    final response = await http
+        .get(Uri.parse("${API.currentSellerBrandView}?sellerID=$sellerID"));
+    print("${API.currentSellerBrandView}?sellerID=$sellerID");
 
-  if (response.statusCode == 200) {
-    var decodedResponse = json.decode(response.body);
-    
-    if (decodedResponse is List<dynamic>) {
-      yield decodedResponse;
-      print("++++++++++++++++++++++++++");
-      print(decodedResponse);
+    if (response.statusCode == 200) {
+      var decodedResponse = json.decode(response.body);
+
+      if (decodedResponse is List<dynamic>) {
+        yield decodedResponse;
+        // print("++++++++++++++++++++++++++");
+        print(decodedResponse);
+      } else {
+        //throw Exception('Expected a list but got a different type');
+        Text('No brands exists');
+      }
     } else {
-      //throw Exception('Expected a list but got a different type');
-       Text('No brands exists');
+      throw Exception('Failed to load brands');
     }
-  } else {
-    throw Exception('Failed to load brands');
   }
-}
-
 }
